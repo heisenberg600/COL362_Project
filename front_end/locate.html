@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <title>locate</title>
+        <link rel="stylesheet" href="styles.css" />
+    </head>
+
+    <body>
+        
+        <header class="header">
+            <nav class = "nav">
+                <ul>
+                    <li><a href="home.html">HOME</a></li>
+                    <li><a href="login.html">LOGIN</a></li>
+                    <li><a href="signup.html">SIGNUP</a></li>
+                    <li><a href="restaurants.html">FILTER</a></li>
+                    <li><a href="locate.html">LOCATE</a></li>
+                    <li><a href="review.html">REVIEW</a></li>
+                    <li><a href="update_manager.html">UPDATE MANAGER</a></li>
+                    <li><a href="update_user.html">UPDATE USER</a></li>
+                    <li><a href="update_admin.html">UPDATE ADMIN</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <form id = "findrest" class = "locaterest">
+            <h1>Find your Restaurant</h1>
+            Find by 
+            
+            <select name = "mode" id = "modeID" onchange="onLoadLocate()">
+                <option value = "byresid">ID</option>
+                <option value = "bycoord">Coordinate</option>
+                <option value = "byphone">Phone Number</option>
+            </select>
+
+            <input class = "submit" type = "submit" value = "Find">
+
+            <table id = "table">
+            </table>   
+        </form>
+
+        <form id = "locaterest" class = "locaterest">
+            <h1>Locate your Restaurant</h1>
+            <input class = "submit" type = "submit" value = "Locate">
+
+        </form>
+
+        <script src = "./js/locate.js"></script>
+    </body>
+</html>

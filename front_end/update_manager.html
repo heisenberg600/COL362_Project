@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <title>updatemanager</title>
+        <link rel="stylesheet" href="styles.css" />
+    </head>
+
+    <body>
+        
+        <header class="header">
+            <nav class = "nav">
+                <ul>
+                    <li><a href="home.html">HOME</a></li>
+                    <li><a href="login.html">LOGIN</a></li>
+                    <li><a href="signup.html">SIGNUP</a></li>
+                    <li><a href="restaurants.html">FILTER</a></li>
+                    <li><a href="locate.html">LOCATE</a></li>
+                    <li><a href="review.html">REVIEW</a></li>
+                    <li><a href="update_manager.html">UPDATE MANAGER</a></li>
+                    <li><a href="update_user.html">UPDATE USER</a></li>
+                    <li><a href="update_admin.html">UPDATE ADMIN</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <form id = "updatemanager" class = "locaterest">
+            <h1>Update your Restaurant</h1>
+            <h3>Your Restaurant id is : </h3>
+
+            <!-- Here by default show the older values -->
+            <table>
+
+                <tr>
+                    <td>Name : </td>
+                    <td><input type = "text" name = "name" id = "name"></td>
+                </tr>
+
+                <tr>
+                    <td>Average Price : </td>
+                    <td><input type = "number" name = "price" id = "price"></td>
+                </tr>
+
+                <tr>
+                    <td>URL : </td>
+                    <td><input type = "text" name = "url" id = "url"></td>
+                </tr>
+
+                <tr>
+                    <td>Phone Number : </td>
+                    <td><input type = "tel" name = "phone" id = "phone"></td>
+                </tr>
+
+                <tr>
+                    <td>Special : </td>
+                    <td><input type = "checkbox" name = "flag" id = "flag"></td>
+                </tr>
+
+                <tr>
+                    <td>Menu : </td>
+                    <td><input type = "text" name = "menu" id = "menu"></td>
+                </tr>
+
+                <tr>
+                    <td>Latitude : </td>
+                    <td><input type = "number" name = "lat" id = "lat" step = "0.000001"></td>
+                </tr>
+
+                <tr>
+                    <td>Longitude : </td>
+                    <td><input type = "number" name = "lon" id = "lon" step = "0.000001"></td>
+                </tr>
+
+                <tr>
+                    <td>City : </td>
+                    <td><input type = "text" name = "city" id = "city"></td>
+                </tr>
+                
+                <tr>
+                    <td>Postal : </td>
+                    <td><input type = "text" name = "postal" id = "postal"></td>
+                </tr>
+                
+                <tr>
+                    <td>Province : </td>
+                    <td><input type = "text" name = "province" id = "province"></td>
+                </tr>
+
+                <tr>
+                    <td>Country : </td>
+                    <td><input type = "text" name = "country" id = "country"></td>
+                </tr>
+
+
+            </table>
+            <input class = "submit" type = "submit" value = "Update" id = "submit">
+
+            <br>
+            <br>
+            <input class = "submit" type = "submit" value = "Delete my Restraunt" id = "delete">
+
+        </form>
+
+    </body>
+</html>
