@@ -24,7 +24,7 @@
             </nav>
         </header>
 
-        <form id = "filterrest" class = "filterrest">
+        <form id = "filterrest" class = "locaterest">
             <h1>Filter your dream Restaurant</h1>
             <h6>(fill only required entries)</h6>
             <input class = "submit" type = "submit" value = "Refresh">
@@ -93,7 +93,32 @@
                 <label><input type = "checkbox" name = "url" >URL </label>
             </div>
 
+            <h3>Rows displayed :  </h3>
 
+            <table>
+                <tr>
+                    <td>Show top </td>
+                    <td><input type = "number" min = "0" name = "num"> </td>
+                    <td>rows with</td>
+                    <td>
+                        <select name = "order" id = "orderID">
+                            <option value = "least">Least</option>
+                            <option value = "most">Most</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select name = "val" id = "valID">
+                            <option value = "number">Number of</option>
+                            <option value = "price">Priced</option>
+                            <option value = "rating">Rated</option>
+                            <option value = "reviewCount">Reviewed</option>
+                            <option value = "created">Creation date</option>
+                        </select>
+                    </td>
+                    <td>restaurants</td>
+                </tr>
+            </table>
         </form>
+
     </body>
 </html>

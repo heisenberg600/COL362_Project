@@ -1,0 +1,86 @@
+
+@font-face {
+    font-family: "Booter - Zero Zero";
+    src: url("Fonts/Booter - Zero Zero.woff") format("woff"),
+         url("Fonts/Booter - Zero Zero.woff2") format("woff2");
+    font-weight: normal;
+    font-style: normal;
+}
+
+html, body {
+    margin: 0;
+    min-height: 100%;
+}
+
+body {
+    background-image: url("bg.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.nav {
+    background-color: #7b5984;
+    margin-bottom: 50px;
+}
+
+.nav ul {
+    margin: 0;
+    padding-left: 100px;
+}
+
+.nav li {
+    display: inline;
+    padding: 2px;
+}
+
+.nav a {
+    display: inline-block;
+    padding: .5em;
+    color: #f8dbaf;
+}
+
+.nav li:hover{
+    background-color: #794d46;
+    border-radius:  2px;
+
+}
+
+.homebox {
+    text-align: center;
+    font-size: 1.1em;
+    font-weight: lighter;
+    /* border-bottom: 1px solid grey; */
+    padding-bottom: 20px;
+}
+
+.loginbox{
+    /* border: 10px solid grey; */
+    position: absolute;
+    top : 20%;
+    left: 40%;
+}
+
+.loginbox h1 {
+    /* border-bottom: 2px solid grey; */
+    margin-bottom: 30px;
+    padding : 5px;
+}
+
+.textbox{
+    /* width: 75%; */
+    padding: 5px;
+    margin-bottom: 20px;
+    /* border: 2px solid grey; */
+}
+
+#homebox {
+    text-align: center;
+}
+
+.locaterest{
+    margin: 20px;
+    font-size: 1.1em;
+    font-weight: lighter;
+    /* border-bottom: 1px solid grey; */
+    padding-bottom: 20px;
+}

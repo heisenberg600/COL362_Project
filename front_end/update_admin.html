@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <title>updatemanager</title>
+        <link rel="stylesheet" href="styles.css" />
+    </head>
+
+    <body>
+        
+        <header class="header">
+            <nav class = "nav">
+                <ul>
+                    <li><a href="home.html">HOME</a></li>
+                    <li><a href="login.html">LOGIN</a></li>
+                    <li><a href="signup.html">SIGNUP</a></li>
+                    <li><a href="restaurants.html">FILTER</a></li>
+                    <li><a href="locate.html">LOCATE</a></li>
+                    <li><a href="review.html">REVIEW</a></li>
+                    <li><a href="update_manager.html">UPDATE MANAGER</a></li>
+                    <li><a href="update_user.html">UPDATE USER</a></li>
+                    <li><a href="update_admin.html">UPDATE ADMIN</a></li>
+                </ul>
+            </nav>
+        </header>
+        
+        <form id = "updateadmin" class = "locaterest">
+            <table>
+                <tr><td><h1>Delete</h1></td></tr>
+                <tr>
+                    <td>Delete data for</td>
+                    <td>
+                        <select id = "deltable" name = "deltable" onchange="onLoadDelete()">
+                            <option value = "restaurant">Restaurant</option>
+                            <option value = "user">User</option>
+                            <option value = "manager">Manager</option>
+                            <option value = "admin">Admin</option>
+                            <option value = "address">Address</option>
+                        </select>
+                    </td>
+                    <td>with</td>
+                    <td id = "delattr"></td>
+                    <td id = "delval"></td>
+                </tr>
+                <tr><td><h1>Update</h1></td></tr>
+                <tr>
+                    <td>Change data for </td>
+                    <td>
+                        <select id = "updtable" name = "updtable" onchange="onLoadDelete()">
+                            <option value = "restaurant">Restaurant</option>
+                            <option value = "user">User</option>
+                            <option value = "manager">Manager</option>
+                            <option value = "admin">Admin</option>
+                            <option value = "address">Address</option>
+                        </select>
+                    </td>
+                    <td>with ID = </td>
+                    <td><input type = "number" name = "updID"></td>
+                </tr>
+            </table>
+        </form>
+    </body>
+</html>
