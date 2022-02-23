@@ -1,12 +1,14 @@
 from sqlite3 import Cursor
 from form_pranay import LoginForm
 from flask import Flask, request, session, jsonify, render_template, url_for, flash, redirect
+from query import Query
+
+query = Query(cursor)
 
 def CheckName(username):
     username = username.lower()
     #Could create an index over here (Not sure how feasible)
-    cursor.execute("select id from persons where username = '{}';".format(username))
-    tables = cursor.fetchall()
+    tables = query.select(['id'],['persons'],f'username = {username}')
     if(len(tables)!=0):
         return True
     return False
@@ -14,8 +16,7 @@ def CheckName(username):
 def Validate(username, password):
     username = username.lower()
     #Could create an index over here (Not sure how feasible)
-    cursor.execute("select id from persons where username = '{}' and password = '{}';".format(username, password))
-    tables = cursor.fetchall()
+    tables = query.select(['id'],['persons'],f'username = {username} and password = {password}')
     if(len(tables)!=0):
         return True
     return False
