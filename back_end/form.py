@@ -1,7 +1,7 @@
 from random import choices
 from wsgiref.validate import validator
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, FloatField, validators, SelectFeild
+from wtforms import StringField, PasswordField, SubmitField, FloatField, validators, SelectField
 from wtforms.fields.html5 import DateField
 from wtforms.validators import InputRequired, NumberRange
 
@@ -32,7 +32,7 @@ class SignUpForm(FlaskForm):
         'Confirm Password', validators=[InputRequired()])
     first_name = StringField('First Name', validators=[InputRequired])
     last_name = StringField('Last Name', validators=[InputRequired])
-    gender = SelectFeild('Gender', choices=gen_choice,
+    gender = SelectField('Gender', choices=gen_choice,
                          validators=[InputRequired])
     dob = DateField('DOB', format='%Y-%m-%d', validators=[InputRequired])
     submit = SubmitField('Sign Up')
