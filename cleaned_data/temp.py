@@ -1,13 +1,11 @@
 import pandas as pd
+import random
 df = pd.read_csv('reviews.csv')
-for index,row in df.iterrows():
-	if (row['restId']==0):
-		df.at[index,'restId']=1
 
+list=random.sample([i for i in range(1,len(df))],20000)
 
-for index,row in df.iterrows():
-	if (row['restId']==0):
-		print('yes)')
-		
-		
-df.to_csv('r.csv',index=False)	
+trunc=[]
+for row in list:
+	trunc.append(df.iloc[row])
+reviews=pd.DataFrame(trunc,columns=['userId','restId','stars'])
+reviews.to_csv('r.csv',index=False)
