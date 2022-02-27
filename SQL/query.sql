@@ -17,14 +17,23 @@ alter table managers add constraint lastrestrefs foreign key(lastRestId) referen
 alter table reviews add constraint personref foreign key(userId) references persons(id );
 alter table reviews add constraint restrefrev foreign key(restId) references restaurants(restId );
 alter table cities add constraint provref foreign key(province) references province(provinceId);
-create trigger avg_review on reviews
-after insert 
-as 
-begin 
-update restaurants
-set restaurants.avgReview = ((restaurants.avgReview * restaurants.reviewCount) + I.stars)/restaurants.reviewCount + 1, restaurants.reviewCount = restaurants.reviewCount+1
-from inserted I 
-where I.restId = restaurants.restId;
+
+
+CREATE OR REPLACE FUNCTION updation()                                                                                        
+RETURNS trigger
+AS
+$$
+BEGIN
+
+UPDATE restaurants SET avgReview = ((avgReview *num_reviews) + new.stars)/(num_reviews + 1), num_reviews = num_reviews+1; return null;
+END;
+$$ LANGUAGE PLPGSQL;
+
+create trigger avg_review
+after insert
+on reviews
+for each row
+execute procedure updation();
 
 \copy  province(provinceId , name ) from /home/saurabh/COL362_Project/cleaned_data/province.csv delimiter ',' CSV HEADER;
 \copy  cities(cityId , city , province ) from /home/saurabh/COL362_Project/cleaned_data/cities.csv delimiter ',' CSV HEADER;
@@ -32,12 +41,7 @@ where I.restId = restaurants.restId;
 \copy  restaurants(restId ,name ,dateAdded ,menuDesc ,websites ,latitude ,longitude ,cityId  ,address  ,postalCode ,taco_burrito ,priceRangeAvg , avgReview , phoneNo,num_reviews) from /home/saurabh/COL362_Project/cleaned_data/restaurants.csv delimiter ',' CSV HEADER;
 \copy  managers(id , username , password , restId , lastRestId ) from /home/saurabh/COL362_Project/cleaned_data/managers.csv delimiter ',' CSV HEADER;
 \copy  reviews(userId , restId , stars ) from /home/saurabh/COL362_Project/cleaned_data/reviews.csv delimiter ',' CSV HEADER;
--- BASIC QUERIES--
 
-
-
-
---COMBINATION--
 
 
 
