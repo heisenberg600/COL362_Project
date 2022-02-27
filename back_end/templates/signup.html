@@ -1,23 +1,8 @@
-<!DOCTYPE html>
-<html>
-    
-    <head>
-        <title>NAME OF THE APP/SIGNUP</title>
-        <link rel="stylesheet" href="styles.css" />
-    </head>
+{% extends 'base.html' %}
+{%block title%} {{title}} {%endblock%}
+{% block content %}
 
-    <body>
-        <header class="header">
-            <nav class = "nav">
-                <ul>
-                    <li><a href="home.html">HOME</a></li>
-                    <li><a href="login.html">LOGIN</a></li>
-                    <li><a href="signup.html">SIGNUP</a></li>
-                </ul>
-            </nav>
-        </header>
-
-        <form id = "signup" class = "loginbox">
+        <form id = "signup" class = "loginbox"  method = "POST" action = "{{ url_for('signup') }}">
             <h1> SIGNUP </h1>
             <table class= "textbox">
                 <tr>
@@ -27,12 +12,12 @@
 
                 <tr>
                     <td>Password : </td>
-                    <td><input type="text" name = "password" placeholder="Enter your password"></td>
+                    <td><input type="password" name = "password" placeholder="Enter your password"></td>
                 </tr>
 
                 <tr>
                     <td>Confirm Password : </td>
-                    <td><input type="text" name = "confirmPassword" placeholder="Confirm your password"></td>
+                    <td><input type="password" name = "confirmed" placeholder="Confirm your password"></td>
                 </tr>
 
                 <tr>
@@ -59,11 +44,15 @@
             <input class = "submit" type = "submit" value = "Register">
 
             <br>
-            <a href="login.html" class = "textbox">Login</a></li>
+            <a href="/login" class = "textbox">Login</a></li>
+            
+            <br>
+            <div class = "error">
+                {% if error %}
+                    <p>{{ error }}</p>
+                {% endif %} 
+            </div>
 
         </form>
-            
 
-    </body>
-
-</html>
+{% endblock %}

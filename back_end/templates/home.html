@@ -1,33 +1,12 @@
-<!DOCTYPE html>
-<html>
+{% extends 'base.html' %}
+{%block title%} {{title}} {%endblock%}
+{% block content %}
 
-    <head>
-        <title>NAME OF THE APP</title>
-        <link rel="stylesheet" href="styles.css" />
-    </head>
+    <form id = "homebox" class = "loginbox" method = "POST" action = "{{ url_for('restaurants') }}">
+        <h1>NAME OF THE APP!</h1>
+        <h2>Discover restraunts near me</h2>
+        <input type="text" name = "user_name" placeholder="Enter your Name">
+        <input class = "submit" type = "submit" value = "Search">
+    </form>
 
-    <body>
-
-        
-        <header class="header">
-            <nav class = "nav">
-                <ul>
-                    <li><a href="{{url_for('home')}}">HOME</a></li>
-                    <li><a href="login.html">LOGIN</a></li>
-                    <li><a href="signup.html">SIGNUP</a></li>
-                </ul>
-            </nav>
-        </header>
-        
-        <form id = "homebox" class = "loginbox">
-                <h1>NAME OF THE APP!</h1>
-
-                <div class = "discover">
-                    <h2>Discover restraunts near me</h2>
-                    <li><a href="{{url_for('explore')}}">GO</a></li>
-                </div>
-        </form>
-
-    </body>
-
-</html>
+{% endblock %}

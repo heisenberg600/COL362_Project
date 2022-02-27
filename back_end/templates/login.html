@@ -1,36 +1,21 @@
-<!DOCTYPE html>
-<html>
-    
-    <head>
-        <title>NAME OF THE APP/LOGIN</title>
-        <link rel="stylesheet" href="styles.css" />
-    </head>
+{% extends 'base.html' %}
+{%block title%} {{title}} {%endblock%}
+{% block content %}
 
-    <body>
-        <header class="header">
-            <nav class = "nav">
-                <ul>
-                    <li><a href="home.html">HOME</a></li>
-                    <li><a href="login.html">LOGIN</a></li>
-                    <li><a href="signup.html">SIGNUP</a></li>
-                </ul>
-            </nav>
-        </header>
-
-        <form id = "login" class="loginbox">
+        <form id = "login" class="loginbox" method = "POST" action = "{{ url_for('login') }}">
             <h1> LOGIN </h1>
             
             <div class = "textbox">
                 Username: 
                 <br>
-                <input type="text" name = "username" placeholder="Enter your username">
+                <input type="text" name = "username" placeholder="Enter your username" value = "{{ username }}">
             </div>
             
 
             <div class = "textbox">
                 Password: 
                 <br>
-                <input type="text" name = "password" placeholder="Enter your password">
+                <input type="password" name = "password" placeholder="Enter your password">
             </div>
             
             <br>
@@ -40,12 +25,18 @@
             <div class = "textbox">
                 <a href="change_password.html">Forgot Password?</a></li>
                 <br>
-                <a href="signup.html">Signup</a></li>
+                <a href="/signup">Signup</a></li>
             </div>
 
+            <br>
+            <div class = "error">
+                {% if error %}
+                    <p>{{ error }}</p>
+                {% endif %} 
+            </div>
         </form>
+
+
             
 
-    </body>
-
-</html>
+{% endblock %}
