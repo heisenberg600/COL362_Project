@@ -24,20 +24,29 @@ app.config.from_object(APP_SETTINGS)
 
 
 class User():
-    def __init__(self, data, level):
-        self.data = data
-        self.level = level
+    def __init__(self, login, data):
+        self.login = login
+        self.data= data
 
-    def change_username(self, username):
-        self.data['username'] = username
 
-    def change_password(self, password):
-        self.data['password'] = password
+    def setData(self, username):
+        uData = query.select(['*'],['persons'],f"username = '{username}'")[0]
+        uData = {query.cols[i]:uData[i] for i in range(len(uData))}
+        self.data = uData
 
-    def change_privildedge(self, priviledge):
-        self.data['priviledge'] = priviledge
 
-currUser = None
+    def loggedin(self):
+        self.login = True
+    
+    def loggedout(self):
+        self.login = False
+    
+    def is_login(self):
+        return self.login
+
+    
+user = User(False, {})
+
 
 @app.route('/')
 @app.route('/home')
@@ -55,20 +64,41 @@ def available_username(username):
         return False
     return True
 
+
+
 def addUser(username, password, firstname, lastname, gender, dob, level):
-    if (username!= None and password!= None and firstname!= None and lastname!=None and available_username(username)):
+    if (available_username(username)):
     #     cur_query = query.select([''])
         
-        print(available_username(username))
+        
+        len_id_query = query.select(['username'], ['persons']) 
+        cur_id = len(len_id_query)+1
+        gender = gender.lower()
+        
+        query.insert('persons(id,firstname,lastname,gender,phone,email,username,password,dob,priviledge)', [f"'{cur_id}'", f"'{firstname}'", f"'{lastname}'", f"'{gender}'", "'NULL'", "'NULL'", f"'{username}'",f"'{password}'", f"'{dob}'", "2"])
         return (0,'')
     else: 
         return (-1, 'username already taken')
         
-    
+def check_username_password(username, password):
+    cur_rows = query.select(['username'], ['persons'], f"username= '{username}' and password = '{password}'")
+    if(len(cur_rows)==0):
+        return False
+    return True
 
 def loginUser(username, password):
     currUser = User("something", 0)
-    return render_template('thanks.html', title='Thanks', name=username)
+    if(available_username(username)==True):
+        # return(-1, 'username does not exist')
+        return render_template('login.html', title= 'Login', error = 'username does not exist')
+    elif(check_username_password(username, password)== False):
+        return render_template('login.html', title= 'Login', error = 'username and password do not match')
+    else:
+        
+        user.setData(username)
+        # user.set_everything(True, 2, password, username, cur_info[1])
+        return render_template('restaurants.html', title='Restaurants', name=username)
+    # return render_template('thanks.html', title='Thanks', name=username)
 
 @app.route('/signup', methods = ['GET','POST'])
 def signup():
@@ -102,9 +132,8 @@ def login():
         if (username == "" or password == ""):
             error = "Please enter username and password" 
         # check if user exists and password is correct
-        elif(username != password):
-            error = 'Invalid username or password'
-        
+        # elif(username != password):
+        #     error = 'Invalid username or password'
         if(error != None):
             return render_template('login.html', title="Login", error = error, username=username)
         else:

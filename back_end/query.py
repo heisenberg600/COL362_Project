@@ -6,8 +6,9 @@ class Query:
         self.cursor = cursor
         self.execute = cursor.execute
         self.s = set()
-    
-    def select(self, attr:list, tables:list, condition:str = '', order:list = [], group:list = [], distinct = False):
+        self.cols = []
+
+    def select(self, attr:list, tables:list, condition:str = '', order:list = [], group:list = [], limit = -1, distinct = False):
 
         select = 'select'
         if(distinct): select = 'select distinct'
@@ -21,17 +22,20 @@ class Query:
         if(condition == ''): condition = ''
         else: condition = 'where ' + condition
 
+        if(limit < 0):limit = ''
+        else: limit = f'limit {limit}'
+
         tables = ', '.join(tables)
         attr = ', '.join(attr)
 
         start = time.time()
         
-        query = f'{select} {attr} from {tables} {condition} {group} {order}'
+        query = f'{select} {attr} from {tables} {condition} {group} {order} {limit}'
         print(query)
         self.execute(query)
+        self.cols = [desc[0] for desc in self.cursor.description]
         
         ans = self.cursor.fetchall()
-
 
         self.s.add(query)
 
@@ -39,7 +43,8 @@ class Query:
 
     def insert(self, table, values:list):
         start = time.time()
-        query = f'insert into {table} values {values}'
+        values = ', '.join(values)
+        query = f'insert into {table} values({values})'
         self.execute(query)
         self.s.add(query)
 
