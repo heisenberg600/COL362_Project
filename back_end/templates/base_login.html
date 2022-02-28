@@ -17,11 +17,14 @@
                     <li><a href="{{ url_for('restaurants') }}">FILTER</a></li>
                     <li><a href="{{ url_for('locate') }}">LOCATE</a></li>
                     <li><a href="{{ url_for('review') }}">REVIEW</a></li>
-                    <li><a href="{{ url_for('update_manager') }}">UPDATE MANAGER</a></li>
-                    <li><a href="{{ url_for('update_user') }}">UPDATE USER</a></li>
-                    <li><a href="{{ url_for('update_admin') }}">UPDATE ADMIN</a></li>
+                    <li><a href="{{ url_for('update') }}">UPDATE</a></li>
+
+                    <li>{%block user%} {%endblock%}</li>
+                    <li><a href="{{ url_for('home') }}">LOGOUT </a> </li>
+                    
                 </ul>
             </nav>
+
         </header>
 
         {% block content %}
@@ -31,3 +34,4 @@
         
     </body>
 </html>
+

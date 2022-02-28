@@ -48,9 +48,24 @@ class Query:
         self.execute(query)
         self.s.add(query)
 
+    def update(self, table, data, cond):
+        upd = []
+        for i in data:
+            curr = str(i) + " = "
+            val = data[i]
+            if(type(val) == str):
+                curr += f"'{data[i]}'"
+            else:
+                curr += str(data[i])
+            upd.append(curr)
+        query = f'update {table} set {", ".join(upd)} where {cond}'
+        print(query)
+        self.execute(query)
+        self.s.add(query)
 
     def dump(self):
         file = open('queries.txt','w')
         for i in self.s:
             file.write(i[0] + ': ' + str(i[1]) + '\n')
         file.close()
+

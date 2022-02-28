@@ -2,7 +2,7 @@
 {%block title%} {{title}} {%endblock%}
 {% block content %}
 
-        <form id = "filterrest" class = "locaterest">
+        <form id = "filterrest" class = "locaterest" method = "POST" action = "{{ url_for('restaurants') }}">
             <h1>Filter your dream Restaurant</h1>
             <h6>(fill only required entries)</h6>
             <input class = "submit" type = "submit" value = "Refresh">
@@ -59,9 +59,9 @@
                 <label><input type = "checkbox" name = "resID"  checked>ID </label>
                 <label><input type = "checkbox" name = "name" checked>Name </label>
                 <label><input type = "checkbox" name = "phoneNumber" checked>Phone Number </label>
-                <label><input type = "checkbox" name = "city" checked>City </label>
+                <label><input type = "checkbox" name = "city_check" checked>City </label>
                 <label><input type = "checkbox" name = "country" checked>Country </label>
-                <label><input type = "checkbox" name = "province" >Province </label>
+                <label><input type = "checkbox" name = "province_check" >Province </label>
                 <label><input type = "checkbox" name = "postalCode" >Postal Code </label>
                 <label><input type = "checkbox" name = "latitude" >Latitude </label>
                 <label><input type = "checkbox" name = "longitude" >Longitude </label>
@@ -98,4 +98,4 @@
             </table>
         </form>
 
-        {% endblock %}
+{%endblock%}

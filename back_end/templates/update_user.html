@@ -2,21 +2,26 @@
 {%block title%} {{title}} {%endblock%}
 {% block content %}
 
-        <form id = "updateuser" class = "locaterest">
+        <form id = "updateuser" class = "locaterest" method="POST" action=" {{ url_for('update') }} ">
             <h1>Update your Details</h1>
-            <h3>Your id is : </h3>
+            <h3>Your id is : {{ data['id'] }}</h3>
 
             <!-- Here by default show the older values -->
-            <table>
+            <table class = "update">
 
                 <tr>
-                    <td>Name : </td>
-                    <td><input type = "text" name = "name" id = "name"></td>
+                    <td>First Name : </td>
+                    <td><input type = "text" name = "firstname" id = "firstname" value="{{ data['firstname'] }}"></td>
+                </tr>
+                
+                <tr>
+                    <td>Last Name : </td>
+                    <td><input type = "text" name = "lastname" id = "lastname" value="{{ data['lastname'] }}"></td>
                 </tr>
 
                 <tr>
                     <td>Username : </td>
-                    <td><input type = "text" name = "username" id = "username"></td>
+                    <td><input type = "text" name = "username" id = "username" value="{{ data['username'] }}"></td>
                 </tr>
 
                 <tr>
@@ -31,9 +36,24 @@
                 <tr>
                     <td>DOB : </td>
                     <td>
-                        <input type="date" name = "dob">
+                        <input type="date" name = "dob" >
                     </td>
                 </tr>
+
+                <tr>
+                    <td>Phone Number: </td>
+                    <td>
+                        <input type="text" name = "phone" value="{{ data['phone'] }}">
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>Email : </td>
+                    <td>
+                        <input type="email" name = "email" value="{{ data['email'] }}">
+                    </td>
+                </tr>
+
 
             </table>
             <input id = "submit" class = "submit" type = "submit" value = "Update">

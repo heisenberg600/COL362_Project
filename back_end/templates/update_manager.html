@@ -2,71 +2,77 @@
 {%block title%} {{title}} {%endblock%}
 {% block content %}
 
-        <form id = "updatemanager" class = "locaterest">
+
+<!-- {%block user%}
+    {% if level == 2 %}
+    USER
+    {% elif level == 1 %}
+    MANAGER
+    {% else %}
+    ADMIN
+    {%endif%}
+{%endblock%} -->
+
+        <form id = "updatemanager" class = "locaterest" method = "POST" action = "{{ url_for('update') }}">
             <h1>Update your Restaurant</h1>
-            <h3>Your Restaurant id is : </h3>
+            <h3>Your Restaurant id is : {{ data['restid'] }} </h3>
 
             <!-- Here by default show the older values -->
             <table>
 
                 <tr>
                     <td>Name : </td>
-                    <td><input type = "text" name = "name" id = "name"></td>
+                    <td><input type = "text" name = "name" id = "name" value = "{{ data['name'] }}"></td>
                 </tr>
 
                 <tr>
                     <td>Average Price : </td>
-                    <td><input type = "number" name = "price" id = "price"></td>
+                    <td><input type = "number" name = "pricerangeavg" id = "price" value = "{{ data['pricerangeavg'] }}"></td>
                 </tr>
 
                 <tr>
                     <td>URL : </td>
-                    <td><input type = "text" name = "url" id = "url"></td>
+                    <td><input type = "text" name = "websites" id = "url" value = "{{ data['websites'] }}"></td>
                 </tr>
 
                 <tr>
                     <td>Phone Number : </td>
-                    <td><input type = "tel" name = "phone" id = "phone"></td>
+                    <td><input type = "tel" name = "phoneno" id = "phone" value = "{{ data['phoneno'] }}"></td>
                 </tr>
 
                 <tr>
                     <td>Special : </td>
-                    <td><input type = "checkbox" name = "flag" id = "flag"></td>
+                    <td><input type = "checkbox" name = "taco_burrito" id = "flag" value = "{{ data['taco_burrito'] == 1 }}"></td>
                 </tr>
 
                 <tr>
                     <td>Menu : </td>
-                    <td><input type = "text" name = "menu" id = "menu"></td>
+                    <td><input type = "text" name = "menudesc" id = "menu" value = "{{ data['menudesc'] }}"></td>
                 </tr>
 
                 <tr>
                     <td>Latitude : </td>
-                    <td><input type = "number" name = "lat" id = "lat" step = "0.000001"></td>
+                    <td><input type = "number" name = "latitude" id = "lat" step = "0.000001" value = "{{ data['latitude']  }}"></td>
                 </tr>
 
                 <tr>
                     <td>Longitude : </td>
-                    <td><input type = "number" name = "lon" id = "lon" step = "0.000001"></td>
+                    <td><input type = "number" name = "longitude" id = "lon" step = "0.000001" value = "{{ data['longitude'] }}"></td>
                 </tr>
 
                 <tr>
                     <td>City : </td>
-                    <td><input type = "text" name = "city" id = "city"></td>
+                    <td><input type = "text" name = "city" id = "city" value = "{{ data['city'] }}"></td>
                 </tr>
                 
                 <tr>
                     <td>Postal : </td>
-                    <td><input type = "text" name = "postal" id = "postal"></td>
+                    <td><input type = "text" name = "postalcode" id = "postal" value = "{{ data['postalcode'] }}"></td>
                 </tr>
                 
                 <tr>
                     <td>Province : </td>
-                    <td><input type = "text" name = "province" id = "province"></td>
-                </tr>
-
-                <tr>
-                    <td>Country : </td>
-                    <td><input type = "text" name = "country" id = "country"></td>
+                    <td><input type = "text" name = "province" id = "province" value = "{{ data['province'] }}"></td>
                 </tr>
 
 

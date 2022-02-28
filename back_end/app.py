@@ -1,6 +1,7 @@
 from crypt import methods
 from multiprocessing import Condition, connection
 from flask import Flask, request, render_template, url_for, flash, redirect
+from flask_login import current_user
 from matplotlib.pyplot import title
 import psycopg2 as psql
 from form import Finder, LoginForm, SignUpForm
@@ -17,7 +18,8 @@ connection = psql.connect(
                 port="5432",
                 database="project")
 
-query = Query(connection.cursor())
+to_cursor = connection.cursor()
+query = Query(to_cursor)
 
 app = Flask(__name__)
 app.config.from_object(APP_SETTINGS)
@@ -32,8 +34,53 @@ class User():
     def setData(self, username):
         uData = query.select(['*'],['persons'],f"username = '{username}'")[0]
         uData = {query.cols[i]:uData[i] for i in range(len(uData))}
+        if(uData['priviledge'] ==1):
+            rData = query.select(['*'],['managersView'],f"id = '{uData['id']}'")[0]
+            rData = {query.cols[i]:rData[i] for i in range(len(rData))}
+            self.rdata = rData 
         self.data = uData
 
+    def setDataByID(self, id):
+        uData = query.select(['*'],['persons'],f"id = '{id}'")[0]
+        uData = {query.cols[i]:uData[i] for i in range(len(uData))}
+        if(uData['priviledge'] ==1):
+            rData = query.select(['*'],['managersView'],f"id = '{uData['id']}'")[0]
+            rData = {query.cols[i]:rData[i] for i in range(len(rData))}
+            self.rdata = rData 
+        self.data = uData
+
+    def update(self, data):
+        changed = {}
+        if(self.level() == 2):
+            prev = self.data
+            table = 'persons'
+        else:
+            prev = self.rdata
+            table = 'managersView'
+        for i in data:
+            val = data[i]
+            if(type(val) != type(prev[i])):
+                if(prev[i] == None):
+                    if(val == 'None'):
+                        val = None
+                else:
+                    val = type(prev[i])(val)
+
+            if(val == None):return -1
+            if(prev[i] != val):
+                changed[i] = val
+
+        query.update(table, changed, f"id = {self.data['id']} ")
+        self.setDataByID(self.data['id'])
+        return 0
+        
+    def level(self):
+        return self.data['priviledge']
+
+    def getdata(self):
+        if(self.level() == 1):
+            return self.rdata
+        return self.data
 
     def loggedin(self):
         self.login = True
@@ -53,6 +100,10 @@ user = User(False, {})
 def home():
     return render_template('home.html', title="Home Page")
 
+def refresh():
+    user = User(False, {})
+    return home()
+
 @app.route('/thanks', methods = ['POST', 'GET'])
 def thanks():
     name = request.form.get("user_name")
@@ -65,6 +116,8 @@ def available_username(username):
     return True
 
 
+def convert(input_val):
+    return input_val=="on"
 
 def addUser(username, password, firstname, lastname, gender, dob, level):
     if (available_username(username)):
@@ -87,14 +140,14 @@ def check_username_password(username, password):
     return True
 
 def loginUser(username, password):
-    currUser = User("something", 0)
+
     if(available_username(username)==True):
         # return(-1, 'username does not exist')
         return render_template('login.html', title= 'Login', error = 'username does not exist')
     elif(check_username_password(username, password)== False):
         return render_template('login.html', title= 'Login', error = 'username and password do not match')
     else:
-        
+        user.login = True
         user.setData(username)
         # user.set_everything(True, 2, password, username, cur_info[1])
         return render_template('restaurants.html', title='Restaurants', name=username)
@@ -111,8 +164,6 @@ def signup():
         gender = request.form.get("Gender")
         dob = request.form.get("dob")
 
-        print(username, password, confirmed, firstname, lastname, gender, dob)
-
         # set level accordingly
         current_details = addUser(username, password, firstname, lastname, gender, dob, 0)
         if(current_details[0] == -1):
@@ -128,6 +179,7 @@ def login():
     if(request.method == 'POST'):
         username = request.form.get('username')
         password = request.form.get('password')
+
         error = None
         if (username == "" or password == ""):
             error = "Please enter username and password" 
@@ -145,27 +197,175 @@ def login():
 
 @app.route('/restaurants', methods=['GET', 'POST'])
 def restaurants():
+    if(request.method == 'POST'):
+        distMin = request.form.get('distMin')
+        # if(distMin==""):
+        #     distmin = f" distance>0 "
+        # else:
+        #     distmin = f" distance>{distMin} "
+        distMax = request.form.get('distMax')
+        # if(distMax==""):
+        #     distMax = f" and distance<1000000 "
+        # else:
+        #     distMax = f" and distance<{distMax} "
+        ratingMin = request.form.get('ratingMin')
+        if(ratingMin==""):
+            ratingMin = f" restaurants.avgReview>0 "
+        else:
+            ratingMin = f" restaurants.avgReview>{ratingMin} "
+        ratingMax = request.form.get('ratingMax')
+        if(ratingMax==""):
+            ratingMax = f" and restaurants.avgReview<1000000 "
+        else:
+            ratingMax = f" and restaurants.avgReview<{ratingMax} "
+        
+        createdMin = request.form.get('createdMin')
+        if(createdMin==""):
+            createdMin = " and restaurants.dateAdded>'1900-01-01'"
+        else:
+            createdMin = f" and restaurants.dateAdded>'{createdMin}' "
+        createdMax = request.form.get('createdMax')
+        if(createdMax==""):
+            createdMax = f" and restaurants.dateAdded<'2100-01-01' "
+        else:
+            createdMax = f" and restaurants.dateAdded<'{createdMax}' "
+        priceMin = request.form.get('priceMin')
+        if(priceMin==""):
+            priceMin = f" and restaurants.priceRangeAvg>0 "
+        else:
+            priceMin = f" and restaurants.priceRangeAvg>{priceMin} "
+
+        priceMax = request.form.get('priceMax')
+        if(priceMax==""):
+            priceMax = f" and restaurants.priceRangeAvg<10000000 "
+        else:
+            priceMax = f" and restaurants.priceRangeAvg<{priceMax} "
+        city = request.form.get('city')
+        if(city!=""):
+            city = f"and cities.city='{city}'"
+        province = request.form.get('province')
+        if(province!=""):
+            province = f"and provinces.province='{province}'"
+        # country = request.form.get('country')
+
+
+
+        columns = ""
+        check_restaurant = False
+        check_city_province = False
+
+        resID = convert(request.form.get('resID'))
+        if(resID):
+            columns+="restaurants.restId, "
+            
+        name = convert(request.form.get('name'))
+        if(name):
+            columns+="restaurants.name, "
+            
+        phoneNumber = convert(request.form.get('phoneNumber'))
+        if(phoneNumber):
+            columns+="restaurants.phoneNo, "
+            
+        city_check = convert(request.form.get('city_check'))
+        if(city_check):
+            columns+="cities.city, "
+            
+        # country = convert(request.form.get('country'))
+        province_check = convert(request.form.get('province_check'))
+        if(province_check):
+            columns+="province.name, "
+            
+        postalCode = convert(request.form.get('postalCode'))
+        if(postalCode):
+            columns+= "restaurants.postalCode, "
+            
+        latitude = convert(request.form.get('latitude'))
+        if(latitude):
+            columns+= "restaurants.latitude, "
+            
+        longitude = convert(request.form.get('longitude'))
+        if(longitude):
+            columns+= "restaurants.longitude, "
+            
+        avgPrice = convert(request.form.get('avgPrice'))
+        if(avgPrice):
+            columns+= "restaurants.priceRangeAvg, "
+            
+        avgRating = convert(request.form.get('avgRating'))
+        if(avgRating):
+            columns+= "restaurants.avgReview, "
+            
+        created = convert(request.form.get('created'))
+        if(created):
+            columns+= "restaurants.dateAdded, "
+            
+        url = convert(request.form.get('url'))
+        if(url):
+            columns+= "restaurant.websites, "
+            
+
+        num = request.form.get('num')
+        if(num==""):
+            num= "10"
+        order = request.form.get('order')
+        if(order=="least"):
+            order = "ASC"
+        else:
+            order = "DESC"
+        val = request.form.get('val')
+
+        if(val=="number" or val=="price"):
+            val= "restaurants.pricerangeAvg"
+
+        if(val=="rating"):
+            val="restaurants.avgReview"
+        
+        if(val=="reviewCount"):
+            val= "restaurants.num_reviews"
+        
+        if(val=="created"):
+            val= "restaurants.dateAdded"
+
+        
+        # if(val=="")
+
+
+        columns = columns[:-2]
+
+        print(order, val)
+        
+            
+        cur_query = f"select {columns} from restaurants, province, cities where {ratingMin} {ratingMax} {createdMin} {createdMax} {priceMin} {priceMax} {city} {province} and restaurants.cityId=cities.cityId and cities.province = province.provinceId order by {val} {order} limit {num} "
+
+    
+
+        print(cur_query)
+        to_cursor.execute(cur_query)
+        ans = to_cursor.fetchall()
+        print(ans)
+
+        # print(distMin, resID, num, order, val, city_check, province_check)
+
+
     return render_template('restaurants.html', title="Filter")
 
-@app.route('/locate', methods=['GET', 'POST'])
-def locate():
-    return render_template('locate.html', title="Locate")
-
-@app.route('/update_admin', methods=['GET', 'POST'])
-def update_admin():
-    return render_template('update_admin.html', title="Update")
-
-@app.route('/update_user', methods=['GET', 'POST'])
-def update_user():
-    return render_template('update_user.html', title="Update")
-
-@app.route('/update_manager', methods=['GET', 'POST'])
-def update_manager():
-    return render_template('update_manager.html', title="Update")
+@app.route('/update', methods=['GET', 'POST'])
+def update():
+    if(user.login):
+        if(request.method == 'POST'):
+            data = request.form.to_dict()
+            user.update(data)
+        pages = ['update_admin.html','update_manager.html','update_user.html']
+        return render_template(pages[user.level()], title="Update", data = user.getdata(), level = user.level())
+    else:return refresh()
 
 @app.route('/review', methods=['GET', 'POST'])
 def review():
-    return render_template('review.html', title="Review")
+    return render_template('review.html', title="Review", level = user.level())
+
+@app.route('/locate', methods=['GET', 'POST'])
+def locate():
+    return render_template('locate.html', title="Locate", level = user.level())
 
 
 # @app.route("/explore", methods=['GET', 'POST'])

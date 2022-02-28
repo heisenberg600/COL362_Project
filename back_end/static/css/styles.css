@@ -84,3 +84,7 @@ body {
     /* border-bottom: 1px solid grey; */
     padding-bottom: 20px;
 }
+
+.user{
+    align-self: right;
+}
