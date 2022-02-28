@@ -60,7 +60,7 @@
                 <label><input type = "checkbox" name = "name" checked>Name </label>
                 <label><input type = "checkbox" name = "phoneNumber" checked>Phone Number </label>
                 <label><input type = "checkbox" name = "city_check" checked>City </label>
-                <label><input type = "checkbox" name = "country" checked>Country </label>
+                <!-- <label><input type = "checkbox" name = "country" checked>Country </label> -->
                 <label><input type = "checkbox" name = "province_check" >Province </label>
                 <label><input type = "checkbox" name = "postalCode" >Postal Code </label>
                 <label><input type = "checkbox" name = "latitude" >Latitude </label>
@@ -98,4 +98,71 @@
             </table>
         </form>
 
+        <form id = "getrest" class = "locaterest" method = "POST">
+            <table>
+                <tr>
+                    <th ><h3 id = "selectedText"> No Restaurant selected </h3></th>
+                    <th><h3 id = "selectedID"></h3></th>
+                </tr>
+                <tr>
+                    <td>
+                        <input type="button" value = "Locate" onclick="locate();"/>
+                    </td>
+
+                    <td>
+                        <input type="button" value = "Review" onclick="review();"/>
+                    </td>
+
+                    <td>
+                        <input hidden type = "text" name = "restSelected" id = "restSelected"/>
+                    </td>
+                    
+
+                </tr>
+            </table> 
+        </form>
+
+        <table class = "content-table" id = "content-table">
+            <tr>
+                {% for h in cols %}
+                    <th>
+                        {{h}}
+                    </th>
+                {% endfor %}
+            </tr>
+
+            {% for r in rows %}
+                <tr>
+                    {% for c in r %}
+                        <td>{{c}} </td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </table>
+
+        <script>
+    
+            var table = document.getElementById('content-table');
+            
+            for(var i = 1; i < table.rows.length; i++)
+            {
+                table.rows[i].onclick = function()
+                {
+                    document.getElementById("selectedText").innerHTML = "You selected restaurant :" ;
+                    document.getElementById("selectedID").innerHTML = this.cells[0].innerHTML;
+                    document.getElementById("restSelected").value = this.cells[0].innerHTML;
+                };
+            }
+
+            function locate(){
+                document.forms['getrest'].action = "{{ url_for('locate') }}";
+                document.forms['getrest'].submit();
+            }
+
+            function review(){
+                document.forms['getrest'].action =  "{{ url_for('review') }}";
+                document.forms['getrest'].submit();
+            }
+
+     </script>
 {%endblock%}

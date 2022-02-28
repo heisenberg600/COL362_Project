@@ -1,14 +1,14 @@
 var byresid = [
-    ["ID : ", "<input type = \"number\" name = \"resID\">"]
+    ["ID : ", "<input required type = \"number\" name = \"resID\">"]
 ]
 
 var byphone = [
-    ["Phone Number : ", "<input type = \"tel\" name = \"phone\">"]
+    ["Phone Number : ", "<input required type = \"tel\" name = \"phone\">"]
 ]
 
 var bycoord = [
-    ["Latitude : ", "<input type = \"number\" step = \"0.000001\" name = \"lat\">"],
-    ["Longitude : ", "<input type = \"number\" step = \"0.000001\" name = \"long \">"]
+    ["Latitude : ", "<input required type = \"number\" step = \"0.000001\" name = \"lat\">"],
+    ["Longitude : ", "<input required type = \"number\" step = \"0.000001\" name = \"long\">"]
 ]
 
 function onLoadLocate() {

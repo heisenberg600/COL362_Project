@@ -337,12 +337,12 @@ def restaurants():
             
         cur_query = f"select {columns} from restaurants, province, cities where {ratingMin} {ratingMax} {createdMin} {createdMax} {priceMin} {priceMax} {city} {province} and restaurants.cityId=cities.cityId and cities.province = province.provinceId order by {val} {order} limit {num} "
 
-    
-
-        print(cur_query)
         to_cursor.execute(cur_query)
         ans = to_cursor.fetchall()
+
+        cols = [i.split('.')[-1] for i in columns.split(", ")]
         print(ans)
+        return render_template('restaurants.html', title="Filter", rows=ans, cols = cols)
 
         # print(distMin, resID, num, order, val, city_check, province_check)
 
@@ -356,16 +356,60 @@ def update():
             data = request.form.to_dict()
             user.update(data)
         pages = ['update_admin.html','update_manager.html','update_user.html']
-        return render_template(pages[user.level()], title="Update", data = user.getdata(), level = user.level())
+        return render_template(pages[user.level()], title="Update", data = user.getdata())
     else:return refresh()
+
+def changeRest(site, title, data):
+
+    if(data.get('restSelected') != None):
+        rest_id = data.get('restSelected')
+        return render_template(site, title=title, rest_id = rest_id)   
+
+    elif(data.get('mode') != None):
+        mode = data.get('mode')
+        error = "" 
+
+        if(mode == 'byresid'):
+            rest_id = data.get('resID')
+        elif(mode == 'byphone'):
+            ans = query.select(['restId'], ['restaurants'], f"phoneNo = '{data.get('phone')}'")
+            if(len(ans) > 0 and len(ans[0]) > 0):
+                rest_id = ans[0][0]
+            else:
+                error = "No restaurant found with this phone number"
+        elif(mode == 'bycoord'):
+
+            ans = query.select(['restId'], ['restaurants'], f"latitude = '{data.get('lat')}' and longitude = '{data.get('long')}'")
+            if(len(ans) > 0 and len(ans[0]) > 0):
+                rest_id = ans[0][0]
+            else:
+                error = "No restaurant found with this coordinates"
+        if(error != ""):
+            return render_template(site, title=title, error = error)
+
+        return render_template(site, title=title, rest_id = rest_id)
+    
 
 @app.route('/review', methods=['GET', 'POST'])
 def review():
-    return render_template('review.html', title="Review", level = user.level())
+    if(request.method == 'POST'):
+        data = request.form.to_dict()
+        if(changeRest('review.html', 'Review') == None):
+            rest_id = data.get('restSelected')
+            stars = data.get('stars')
+
+            # add star
+    return render_template('review.html', title="Review")
 
 @app.route('/locate', methods=['GET', 'POST'])
 def locate():
-    return render_template('locate.html', title="Locate", level = user.level())
+    if(request.method == 'POST'):
+        data = request.form.to_dict()
+        if(changeRest('review.html', 'Review') == None):
+            pass
+            # plot
+
+    return render_template('locate.html', title="Locate")
 
 
 # @app.route("/explore", methods=['GET', 'POST'])
