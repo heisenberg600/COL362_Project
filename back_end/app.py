@@ -1,6 +1,5 @@
 from crypt import methods
 from multiprocessing import Condition, connection
-from attr import attr
 from flask import Flask, request, render_template, url_for, flash, redirect
 from matplotlib.pyplot import title
 import psycopg2 as psql
@@ -9,14 +8,16 @@ from query import Query
 
 SECRET_KEY = 'development'
 APP_SETTINGS = "config.DevelopmentConfig"
-# DATABASE_URL = "postgresql://postgres:1234@localhost/xyz"
+DATABASE_URL = "postgresql://postgres:1234@localhost/xyz"
 
-# connection = psql.connect(
-#                 user="python", 
-#                 password='python', 
-#                 host="localhost",
-#                 port="5432",
-#                 database="dbpython")
+connection = psql.connect(
+                user="pranay", 
+                password="qwerty", 
+                host="localhost",
+                port="5432",
+                database="project")
+
+query = Query(connection.cursor())
 
 app = Flask(__name__)
 app.config.from_object(APP_SETTINGS)
@@ -48,8 +49,12 @@ def thanks():
     name = request.form.get("user_name")
     return render_template('thanks.html', title="Thanks", name = name)
 
+def available_username(username):
+    cur_query = query.select([''])
 
 def addUser(username, password, name, gender, dob, level):
+    # if (len(username)>5 and len(password)> 7 and len(name)> 1 and available_username(username)):
+    #     cur_query = query.select([''])
     return 0
 
 def loginUser(username, password):
@@ -63,7 +68,7 @@ def signup():
         password = request.form.get("password")
         confirmed = request.form.get("confirmed")
         name = request.form.get("name")
-        gender = request.form.get("gender")
+        gender = request.form.get("Gender")
         dob = request.form.get("dob")
 
         print(username, password, confirmed, name, gender, dob)

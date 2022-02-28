@@ -2,7 +2,7 @@ import time
 
 
 class Query:
-    def __init(self, cursor):
+    def __init__(self, cursor):
         self.cursor = cursor
         self.execute = cursor.execute
         self.s = set()
@@ -35,7 +35,11 @@ class Query:
         return ans
 
     def insert(self, table, values:list):
-        self.execute(f'insert into {table} values {values}')
+        start = time.time()
+        query = f'insert into {table} values {values}'
+        self.execute(query)
+        self.s.add(query,time.time()-start)
+
 
     def dump(self):
         file = open('queries.txt','w')
