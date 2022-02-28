@@ -27,10 +27,13 @@ class Query:
         start = time.time()
         
         query = f'{select} {attr} from {tables} {condition} {group} {order}'
+        print(query)
         self.execute(query)
+        
         ans = self.cursor.fetchall()
 
-        self.s.add(query,time.time()-start)
+
+        self.s.add(query)
 
         return ans
 
@@ -38,7 +41,7 @@ class Query:
         start = time.time()
         query = f'insert into {table} values {values}'
         self.execute(query)
-        self.s.add(query,time.time()-start)
+        self.s.add(query)
 
 
     def dump(self):

@@ -50,12 +50,21 @@ def thanks():
     return render_template('thanks.html', title="Thanks", name = name)
 
 def available_username(username):
-    cur_query = query.select([''])
+    cur_rows = query.select(['username'], ['persons'], f"username= '{username}'")
+    if(len(cur_rows)!=0):
+        return False
+    return True
 
-def addUser(username, password, name, gender, dob, level):
-    # if (len(username)>5 and len(password)> 7 and len(name)> 1 and available_username(username)):
+def addUser(username, password, firstname, lastname, gender, dob, level):
+    if (username!= None and password!= None and firstname!= None and lastname!=None and available_username(username)):
     #     cur_query = query.select([''])
-    return 0
+        
+        print(available_username(username))
+        return (0,'')
+    else: 
+        return (-1, 'username already taken')
+        
+    
 
 def loginUser(username, password):
     currUser = User("something", 0)
@@ -67,15 +76,17 @@ def signup():
         username = request.form.get("username")
         password = request.form.get("password")
         confirmed = request.form.get("confirmed")
-        name = request.form.get("name")
+        firstname = request.form.get("firstname")
+        lastname = request.form.get("lastname")
         gender = request.form.get("Gender")
         dob = request.form.get("dob")
 
-        print(username, password, confirmed, name, gender, dob)
+        print(username, password, confirmed, firstname, lastname, gender, dob)
 
         # set level accordingly
-        if(addUser(username, password, name, gender, dob, 0) == -1):
-           return render_template('signup.html', title="Signup", error = "Please Enter Valid details")
+        current_details = addUser(username, password, firstname, lastname, gender, dob, 0)
+        if(current_details[0] == -1):
+           return render_template('signup.html', title="Signup", error = current_details[1])
         else:
             return loginUser(username, password)
 
