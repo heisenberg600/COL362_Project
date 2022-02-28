@@ -63,7 +63,7 @@ def signup():
         password = request.form.get("password")
         confirmed = request.form.get("confirmed")
         name = request.form.get("name")
-        gender = request.form.get("gender")
+        gender = request.form.get("Gender")
         dob = request.form.get("dob")
 
         print(username, password, confirmed, name, gender, dob)
