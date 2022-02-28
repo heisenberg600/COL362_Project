@@ -8,7 +8,7 @@
             Find by 
             
             <select name = "mode" id = "modeID" onchange="onLoadLocate()">
-                <option value = "byresid">ID</option>
+                <option value = "byresid" selected>ID</option>
                 <option value = "bycoord">Coordinate</option>
                 <option value = "byphone">Phone Number</option>
             </select>
@@ -16,6 +16,10 @@
             <input class = "submit" type = "submit" value = "Find">
 
             <table id = "table">
+                <tr>
+                    <td>ID</td>
+                    <td><input type = "number" name = "resID"></td>
+                </tr>
             </table>   
         </form>
 
@@ -24,7 +28,5 @@
             <input class = "submit" type = "submit" value = "Locate">
 
         </form>
-
-        <script src = "../back_end/locate.js"></script>
 
         {% endblock %}
