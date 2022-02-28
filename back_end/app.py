@@ -1,5 +1,6 @@
 from crypt import methods
 from multiprocessing import Condition, connection
+from attr import attr
 from flask import Flask, request, render_template, url_for, flash, redirect
 from matplotlib.pyplot import title
 import psycopg2 as psql
@@ -20,7 +21,6 @@ APP_SETTINGS = "config.DevelopmentConfig"
 app = Flask(__name__)
 app.config.from_object(APP_SETTINGS)
 
-# query = Query(curser)
 
 class User():
     def __init__(self, data, level):
