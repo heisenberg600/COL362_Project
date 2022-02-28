@@ -1,0 +1,101 @@
+{% extends 'base_login.html' %}
+{%block title%} {{title}} {%endblock%}
+{% block content %}
+
+        <form id = "filterrest" class = "locaterest">
+            <h1>Filter your dream Restaurant</h1>
+            <h6>(fill only required entries)</h6>
+            <input class = "submit" type = "submit" value = "Refresh">
+            <input class = "submit" type = "reset" value = "Reset">
+
+            <table>
+                <tr>
+                    <td>Distance (in Km): </td>
+                    <td><input type = "number" name = "distMin" step = "0.01"></td>
+                    <td> to </td>
+                    <td><input type = "number" name = "distMax" step = "0.01"></td>
+                </tr>
+
+                <tr>
+                    <td>Avg Rating : </td>
+                    <td><input type = "number" name = "ratingMin" step = "0.1" min = "0" max = "5" placeholder="0"> </td>
+                    <td> to </td>
+                    <td><input type = "number" name = "ratingMax" step = "0.1" min = "0" max = "5" placeholder="5"></td>
+                </tr>
+
+                <tr>
+                    <td>Created between : </td>
+                    <td><input type = "date" name = "createdMin"></td>
+                    <td> and </td>
+                    <td><input type = "date" name = "createdMax"></td>
+                </tr>
+
+                <tr>
+                    <td>Avg Price : </td>
+                    <td><input type = "number" name = "priceMin" step = "1"></td>
+                    <td> to </td>
+                    <td><input type = "number" name = "priceMax" step = "1"></td>
+                </tr>
+
+                <tr>
+                    <td>City : </td>
+                    <td><input type = "text" name = "city"></td>
+                </tr>
+
+                <tr>
+                    <td>Province : </td>
+                    <td><input type = "text" name = "province"></td>
+                </tr>
+
+                <tr>
+                    <td>Country : </td>
+                    <td><input type = "text" name = "country"></td>
+                </tr>
+            </table>
+        
+            <h3>Columns displayed : </h3>
+            
+            <div class = "checkbox">
+                <label><input type = "checkbox" name = "resID"  checked>ID </label>
+                <label><input type = "checkbox" name = "name" checked>Name </label>
+                <label><input type = "checkbox" name = "phoneNumber" checked>Phone Number </label>
+                <label><input type = "checkbox" name = "city" checked>City </label>
+                <label><input type = "checkbox" name = "country" checked>Country </label>
+                <label><input type = "checkbox" name = "province" >Province </label>
+                <label><input type = "checkbox" name = "postalCode" >Postal Code </label>
+                <label><input type = "checkbox" name = "latitude" >Latitude </label>
+                <label><input type = "checkbox" name = "longitude" >Longitude </label>
+                <label><input type = "checkbox" name = "avgPrice" >Average Price </label>
+                <label><input type = "checkbox" name = "avgRating" >Average Rating </label>
+                <label><input type = "checkbox" name = "created" >Created </label>
+                <label><input type = "checkbox" name = "url" >URL </label>
+            </div>
+
+            <h3>Rows displayed :  </h3>
+
+            <table>
+                <tr>
+                    <td>Show top </td>
+                    <td><input type = "number" min = "0" name = "num"> </td>
+                    <td>rows with</td>
+                    <td>
+                        <select name = "order" id = "orderID">
+                            <option value = "least">Least</option>
+                            <option value = "most">Most</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select name = "val" id = "valID">
+                            <option value = "number">Number of</option>
+                            <option value = "price">Priced</option>
+                            <option value = "rating">Rated</option>
+                            <option value = "reviewCount">Reviewed</option>
+                            <option value = "created">Creation date</option>
+                        </select>
+                    </td>
+                    <td>restaurants</td>
+                </tr>
+            </table>
+        </form>
+
+        {% endblock %}

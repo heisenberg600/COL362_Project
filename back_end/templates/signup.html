@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{%block title%} {{title}} {%endblock%}
+{% block content %}
+
+        <form id = "signup" class = "loginbox"  method = "POST" action = "{{ url_for('signup') }}">
+            <h1> SIGNUP </h1>
+            <table class= "textbox">
+                <tr>
+                    <td>Username : </td>
+                    <td><input type="text" name = "username" placeholder="Enter your username"></td>
+                </tr>
+
+                <tr>
+                    <td>Password : </td>
+                    <td><input type="password" name = "password" placeholder="Enter your password"></td>
+                </tr>
+
+                <tr>
+                    <td>Confirm Password : </td>
+                    <td><input type="password" name = "confirmed" placeholder="Confirm your password"></td>
+                </tr>
+
+                <tr>
+                    <td>Name : </td>
+                    <td><input type="text" name = "name" placeholder="Enter your name"></td>
+                </tr>
+
+                <tr>
+                    <td>Gender : </td>
+                    <td>
+                        <input type="radio" name="Gender">Male
+                        <input type="radio" name="Gender">Female
+                        <input type="radio" name="Gender">Other
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>DOB : </td>
+                    <td>
+                        <input type="date" name = "dob">
+                    </td>
+                </tr>
+            </table>
+            <input class = "submit" type = "submit" value = "Register">
+
+            <br>
+            <a href="/login" class = "textbox">Login</a></li>
+            
+            <br>
+            <div class = "error">
+                {% if error %}
+                    <p>{{ error }}</p>
+                {% endif %} 
+            </div>
+
+        </form>
+
+{% endblock %}

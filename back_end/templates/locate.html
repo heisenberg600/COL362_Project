@@ -1,0 +1,32 @@
+{% extends 'base_login.html' %}
+{%block title%} {{title}} {%endblock%}
+{% block content %}
+
+        <form id = "findrest" class = "locaterest">
+            <h3>You selected Restaurant : </h3>
+            <h1>Change Restaurant</h1>
+            Find by 
+            
+            <select name = "mode" id = "modeID" onchange="onLoadLocate()">
+                <option value = "byresid" selected>ID</option>
+                <option value = "bycoord">Coordinate</option>
+                <option value = "byphone">Phone Number</option>
+            </select>
+
+            <input class = "submit" type = "submit" value = "Find">
+
+            <table id = "table">
+                <tr>
+                    <td>ID</td>
+                    <td><input type = "number" name = "resID"></td>
+                </tr>
+            </table>   
+        </form>
+
+        <form id = "locaterest" class = "locaterest">
+            <h1>Locate your Restaurant</h1>
+            <input class = "submit" type = "submit" value = "Locate">
+
+        </form>
+
+        {% endblock %}

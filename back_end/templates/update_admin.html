@@ -1,0 +1,41 @@
+{% extends 'base_login.html' %}
+{%block title%} {{title}} {%endblock%}
+{% block content %}
+        
+        <form id = "updateadmin" class = "locaterest">
+            <table>
+                <tr><td><h1>Delete</h1></td></tr>
+                <tr>
+                    <td>Delete data for</td>
+                    <td>
+                        <select id = "deltable" name = "deltable" onchange="onLoadDelete()">
+                            <option value = "restaurant">Restaurant</option>
+                            <option value = "user">User</option>
+                            <option value = "manager">Manager</option>
+                            <option value = "admin">Admin</option>
+                            <option value = "address">Address</option>
+                        </select>
+                    </td>
+                    <td>with</td>
+                    <td id = "delattr"></td>
+                    <td id = "delval"></td>
+                </tr>
+                <tr><td><h1>Update</h1></td></tr>
+                <tr>
+                    <td>Change data for </td>
+                    <td>
+                        <select id = "updtable" name = "updtable" onchange="onLoadDelete()">
+                            <option value = "restaurant">Restaurant</option>
+                            <option value = "user">User</option>
+                            <option value = "manager">Manager</option>
+                            <option value = "admin">Admin</option>
+                            <option value = "address">Address</option>
+                        </select>
+                    </td>
+                    <td>with ID = </td>
+                    <td><input type = "number" name = "updID"></td>
+                </tr>
+            </table>
+        </form>
+
+        {% endblock %}
