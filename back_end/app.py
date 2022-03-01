@@ -83,19 +83,23 @@ class User():
         changed = {}
         prev = self.rdata
         table = 'managersView'
-
         for i in data:
-            val = data[i]
-            if(type(val) != type(prev[i])):
-                if(prev[i] == None):
-                    if(val == 'None'):
-                        val = None
-                else:
-                    val = type(prev[i])(val)
+            if(i != 'taco_burrito'):
+                val = data[i]
+                if(type(val) != type(prev[i])):
+                    if(prev[i] == None):
+                        if(val == 'None'):
+                            val = None
+                    else:
+                        val = type(prev[i])(val)
 
-            if(val == None):
-                return -1
-            changed[i] = val
+                if(val == None):
+                    return -1
+                changed[i] = val
+        if(data.get('taco_burrito') == None):
+            changed['taco_burrito'] = 0
+        else:
+            changed['taco_burrito'] = 1
         curr_query = "select * from cities where city='{}'".format(
             changed['city'])
         to_cursor.execute(curr_query)
@@ -120,12 +124,11 @@ class User():
             # curr_query = f"insert into  cities(cityId,city,province) values({index},'{changed['city']}','{record2[0][0]}')"
             query.insert('cities(cityId,city,province)', [
                          str(index), f"'{changed['city']}'", f"'{record2[0][0]}'"])
-            print('a fuck')
             # to_cursor.execute(curr_query)
         changed['cityid'] = index
         query.update(table, changed, f"id = {self.data['id']} ")
         self.setDataByID(self.data['id'])
-        print(self.rdata)
+        # print(self.rdata)
         return 0
 
     def update(self, data):
@@ -189,8 +192,8 @@ def addUser(username, password, firstname, lastname, gender, dob, level):
     #     cur_query = query.select([''])
         
         
-        len_id_query = query.select(['username'], ['persons']) 
-        cur_id = len(len_id_query)+1
+        len_id_query = query.select(['max(id)'], ['persons'])
+        cur_id = len_id_query[0][0]+1
         gender = gender.lower()
         
         query.insert('persons(id,firstname,lastname,gender,phone,email,username,password,dob,priviledge)', [f"'{cur_id}'", f"'{firstname}'", f"'{lastname}'", f"'{gender}'", "'NULL'", "'NULL'", f"'{username}'",f"'{password}'", f"'{dob}'", "2"])
@@ -547,21 +550,25 @@ def locate():
         return refresh()
         
 
+
 def updatePass(data):
-    if(data.get('oldpass') != None):
-        if(data.get('oldpass') == user.data['password']):
-            if(data.get('newpass') == data.get('confirmpass')):
-                try:
-                    tables = ['admin', 'managers', 'persons']
-                    query.update(tables[user.level()],{'password':data.get('newpass')},f'id = {user.data["id"]}')
-                    flash("Password changed")
-                    return ""
-                except:
-                    return "There was an error while changing password"
-            else:
-                return "New passwords do not match"
+    try:
+        s = user.state
+    except:
+        s = None
+    if(s != None or (data.get('oldpass') != None and data.get('oldpass') == user.data['password'])):
+        if(data.get('newpass') == data.get('confirmpass')):
+            try:
+                tables = ['admin', 'managers', 'persons']
+                query.update(tables[user.level()],{'password':data.get('newpass')},f'id = {user.data["id"]}')
+                flash("Password changed")
+                return ""
+            except:
+                return "There was an error while changing password"
         else:
-            return "Old password is incorrect"
+            return "New passwords do not match"
+    else:
+        return "Old password is incorrect"
 
 
 def checkPass(data):
@@ -573,6 +580,7 @@ def checkPass(data):
         if(len(ans) > 0 and len(ans[0]) > 0):
             user.setDataByID(ans[0][0])
             user.login = True
+            user.state = 'hold'
             return ans[0][0]
     return -1
 
@@ -588,7 +596,7 @@ def changepass():
             if(error != ""):
                 return render_template('change_password.html', title="Change Password",canchange = True, forgot=False , error = error, **data)
             else:
-                return login()
+                return refresh()
             
         else:
             idd = checkPass(data)
@@ -611,6 +619,7 @@ def changepass():
 @app.route('/logout', methods=['GET', 'POST'])
 def logout():
     flash("Logged out")
+    query.dump()
     return refresh()
 
 

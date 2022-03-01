@@ -31,23 +31,23 @@ class Query:
         start = time.time()
         
         query = f'{select} {attr} from {tables} {condition} {group} {order} {limit}'
-        print(query)
+
         self.execute(query)
         self.cols = [desc[0] for desc in self.cursor.description]
         
         ans = self.cursor.fetchall()
 
-        self.s.add(query)
+        self.s.add((query, time.time()-start))
 
         return ans
 
     def insert(self, table, values:list):
-        start = time.time()
         values = ', '.join(values)
         query = f'insert into {table} values({values})'
+
+        start = time.time()
         self.execute(query)
-        print(query)
-        self.s.add(query)
+        self.s.add((query, time.time()-start))
 
     def update(self, table, data, cond):
         upd = []
@@ -60,13 +60,14 @@ class Query:
                 curr += str(data[i])
             upd.append(curr)
         query = f'update {table} set {", ".join(upd)} where {cond}'
-        print(query)
+
+        start = time.time()
         self.execute(query)
-        self.s.add(query)
+        self.s.add((query, time.time()-start))
 
     def dump(self):
         file = open('queries.txt','w')
         for i in self.s:
+            print(i)
             file.write(i[0] + ': ' + str(i[1]) + '\n')
-        file.close()
 

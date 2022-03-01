@@ -76,7 +76,8 @@ CREATE TRIGGER managerviewtrig
       managersView FOR EACH ROW EXECUTE PROCEDURE managerviewtrig();
       
       
-
+CREATE INDEX personIndex on persons(id);
+CREATE INDEX restIndex on restaurants(restid);
 
 --username password ke base pr saari--
 
