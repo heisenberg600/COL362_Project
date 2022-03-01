@@ -4,34 +4,6 @@ CREATE TABLE managers(id integer, username text, password text, restId integer, 
 CREATE TABLE persons(id integer,firstname text,lastname text,gender text, phone char(14), email text, username text , password text, dob char(10), priviledge integer);
 CREATE TABLE province(provinceId char(2), name text);
 
--- create trigger avg_review on reviews
--- after insert 
--- as 
--- begin 
--- update restaurants
--- set restaurants.avgReview = ((restaurants.avgReview * restaurants.reviewCount) + I.stars)/restaurants.reviewCount + 1, restaurants.reviewCount = restaurants.reviewCount+1
--- from inserted I 
--- where I.restId = restaurants.restId;
-
--- BASIC QUERIES--
-
---LOCATE--
-
--- DECLARE @TestVariable AS VARCHAR(100)
--- SET @TestVariable = 100.100
-
---distance--
--- select *
--- from restaurants
--- where 
-
-
---review
-
-
--- "select * from restaurants 
--- where degrees(acos(sin(radians({0})) * sin(radians({1}))) + (cos(radians({0})) * cos(radians({1})) * cos(radians({2}- {3}))))*60 * 1.1515*1.609344 < 10".format(latitude1, latitude2, longitude1, longitude2)
-
 CREATE TABLE restaurants(restId integer,name text,dateAdded char(10),menuDesc text,websites text,latitude text,longitude text,cityId integer ,address text ,postalCode text,taco_burrito integer,priceRangeAvg integer, avgReview float, phoneNo char(14),num_reviews integer);
 CREATE TABLE reviews(userid integer, restId integer, stars integer);
 
@@ -47,6 +19,15 @@ alter table reviews add constraint personref foreign key(userId) references pers
 alter table reviews add constraint restrefrev foreign key(restId) references restaurants(restId );
 alter table cities add constraint provref foreign key(province) references province(provinceId);
 
+
+
+
+\copy  province(provinceId , name ) from /home/mrstark/Desktop/COL362/Project/cleaned_data/province.csv delimiter ',' CSV HEADER;
+\copy  cities(cityId , city , province ) from /home/mrstark/Desktop/COL362/Project/cleaned_data/cities.csv delimiter ',' CSV HEADER;
+\copy  persons(id ,firstname ,lastname ,gender , phone , email , username  , password , dob , priviledge ) from /home/mrstark/Desktop/COL362/Project/cleaned_data/persons.csv delimiter ',' CSV HEADER;
+\copy  restaurants(restId ,name ,dateAdded ,menuDesc ,websites ,latitude ,longitude ,cityId  ,address  ,postalCode ,taco_burrito ,priceRangeAvg , avgReview , phoneNo,num_reviews) from /home/mrstark/Desktop/COL362/Project/cleaned_data/restaurants.csv delimiter ',' CSV HEADER;
+\copy  managers(id , username , password , restId , lastRestId ) from /home/mrstark/Desktop/COL362/Project/cleaned_data/managers.csv delimiter ',' CSV HEADER;
+\copy  reviews(userId , restId , stars ) from /home/mrstark/Desktop/COL362/Project/cleaned_data/reviews.csv delimiter ',' CSV HEADER;
 
 CREATE OR REPLACE FUNCTION updation()                                                                                        
 RETURNS trigger
@@ -64,14 +45,37 @@ on reviews
 for each row
 execute procedure updation();
 
-\copy  province(provinceId , name ) from /home/saurabh/COL362_Project/cleaned_data/province.csv delimiter ',' CSV HEADER;
-\copy  cities(cityId , city , province ) from /home/saurabh/COL362_Project/cleaned_data/cities.csv delimiter ',' CSV HEADER;
-\copy  persons(id ,firstname ,lastname ,gender , phone , email , username  , password , dob , priviledge ) from /home/saurabh/COL362_Project/cleaned_data/persons.csv delimiter ',' CSV HEADER;
-\copy  restaurants(restId ,name ,dateAdded ,menuDesc ,websites ,latitude ,longitude ,cityId  ,address  ,postalCode ,taco_burrito ,priceRangeAvg , avgReview , phoneNo,num_reviews) from /home/saurabh/COL362_Project/cleaned_data/restaurants.csv delimiter ',' CSV HEADER;
-\copy  managers(id , username , password , restId , lastRestId ) from /home/saurabh/COL362_Project/cleaned_data/managers.csv delimiter ',' CSV HEADER;
-\copy  reviews(userId , restId , stars ) from /home/saurabh/COL362_Project/cleaned_data/reviews.csv delimiter ',' CSV HEADER;
 
 
+create or replace view managersView as
+select managers.id as id, managers.restId as restId, lastRestID, restaurants.name as name, priceRangeAvg, websites, phoneNo, 
+    taco_burrito, menuDesc, latitude, longitude, city, province.name as pname, postalCode,cities.cityId
+from managers, restaurants, cities, province
+where managers.restId = restaurants.restId and restaurants.cityId = cities.cityId and cities.province = provinceId;
+
+
+CREATE OR REPLACE FUNCTION managerviewtrig()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+AS $function$
+   BEGIN
+	IF TG_OP = 'UPDATE' THEN
+	Update restaurants set name= new.name , priceRangeAvg=new.priceRangeAvg, websites=new.websites,phoneNo=new.phoneNo, taco_burrito=new.taco_burrito, menuDesc=new.menuDesc, 	    latitude=new.latitude,longitude=new.longitude,postalCode=new.postalcode,cityId=new.cityId where restId=old.restId;
+       RETURN NEW;
+      ELSIF TG_OP = 'DELETE' THEN
+       DELETE FROM restaurants WHERE restId=OLD.restId;
+       DELETE FROM managers WHERE id=OLD.id;
+       RETURN NULL;
+      END IF;
+      RETURN NEW;
+    END;
+$function$;
+
+CREATE TRIGGER managerviewtrig
+    INSTEAD OF UPDATE OR DELETE ON
+      managersView FOR EACH ROW EXECUTE PROCEDURE managerviewtrig();
+      
+      
 
 
 --username password ke base pr saari--

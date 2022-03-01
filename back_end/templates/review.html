@@ -7,6 +7,15 @@
             {% if rest_id and not error%}
 
             <h3>You selected Restaurant : {{ rest_id }}</h3>
+            <table class = "content-table" id = "content-table">
+    
+                {% for r in rest %}
+                    <tr>
+                        <td><b> {{r}} </b></td>
+                        <td>{{ rest[r] }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
 
             {% elif error %}
             <h3>{{ error }}</h3>

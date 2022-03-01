@@ -1,5 +1,6 @@
 from crypt import methods
 from multiprocessing import Condition, connection
+from re import A
 from flask import Flask, request, render_template, url_for, flash, redirect
 from flask_login import current_user
 from matplotlib.pyplot import title
@@ -27,19 +28,25 @@ app.config.from_object(APP_SETTINGS)
 
 
 class User():
-    def __init__(self, login, data):
+    def __init__(self, login, name, priviledge):
         self.login = login
-        self.data= data
+        self.name = name
+        self.data = {}
+        self.priviledge = priviledge
 
-
-    def setData(self, username):
-        uData = query.select(['*'],['persons'],f"username = '{username}'")[0]
-        uData = {query.cols[i]:uData[i] for i in range(len(uData))}
-        if(uData['priviledge'] ==1):
+    def setData(self, username, level=2):
+        if(level == 2):
+            uData = query.select(['*'],['persons'],f"username = '{username}'")[0]
+            uData = {query.cols[i]:uData[i] for i in range(len(uData))}
+        elif(level == 1):
+            uData = query.select(['*'],['managers'],f"username = '{username}'")[0]
+            uData = {query.cols[i]:uData[i] for i in range(len(uData))}
             rData = query.select(['*'],['managersView'],f"id = '{uData['id']}'")[0]
             rData = {query.cols[i]:rData[i] for i in range(len(rData))}
             self.rdata = rData 
+        self.priviledge = level
         self.data = uData
+        self.name = uData['username']
 
     def setDataByID(self, id):
         uData = query.select(['*'],['persons'],f"id = '{id}'")[0]
@@ -50,14 +57,10 @@ class User():
             self.rdata = rData 
         self.data = uData
 
-    def update(self, data):
+    def update_u(self, data):
         changed = {}
-        if(self.level() == 2):
-            prev = self.data
-            table = 'persons'
-        else:
-            prev = self.rdata
-            table = 'managersView'
+        prev = self.data
+        table = 'persons'
         for i in data:
             val = data[i]
             if(type(val) != type(prev[i])):
@@ -67,16 +70,72 @@ class User():
                 else:
                     val = type(prev[i])(val)
 
-            if(val == None):return -1
+            if(val == None):
+                return -1
             if(prev[i] != val):
                 changed[i] = val
 
         query.update(table, changed, f"id = {self.data['id']} ")
         self.setDataByID(self.data['id'])
         return 0
+
+    def update_r(self, data):
+        changed = {}
+        prev = self.rdata
+        table = 'managersView'
+
+        for i in data:
+            val = data[i]
+            if(type(val) != type(prev[i])):
+                if(prev[i] == None):
+                    if(val == 'None'):
+                        val = None
+                else:
+                    val = type(prev[i])(val)
+
+            if(val == None):
+                return -1
+            changed[i] = val
+        curr_query = "select * from cities where city='{}'".format(
+            changed['city'])
+        to_cursor.execute(curr_query)
+        record1 = to_cursor.fetchall()
+        curr_query = "select * from province where name='{}'".format(
+            changed['pname'])
+        to_cursor.execute(curr_query)
+        record2 = to_cursor.fetchall()
+        if (len(record2) == 0):
+            return -1
+        flag = False
+        for r in record1:
+            if (r[2] == record2[0][0]):
+                flag = True
+                index = r[0]
+                break
+        if (len(record1) == 0 or not flag):
+            curr_query = "select Count(*) from cities"
+            to_cursor.execute(curr_query)
+            record3 = to_cursor.fetchall()
+            index = record3[0][0]+1
+            # curr_query = f"insert into  cities(cityId,city,province) values({index},'{changed['city']}','{record2[0][0]}')"
+            query.insert('cities(cityId,city,province)', [
+                         str(index), f"'{changed['city']}'", f"'{record2[0][0]}'"])
+            print('a fuck')
+            # to_cursor.execute(curr_query)
+        changed['cityid'] = index
+        query.update(table, changed, f"id = {self.data['id']} ")
+        self.setDataByID(self.data['id'])
+        print(self.rdata)
+        return 0
+
+    def update(self, data):
+        if(self.level() == 2):
+            return self.update_u(data)
+        else:
+            return self.update_r(data)
         
     def level(self):
-        return self.data['priviledge']
+        return self.priviledge
 
     def getdata(self):
         if(self.level() == 1):
@@ -93,16 +152,21 @@ class User():
         return self.login
 
     
-user = User(False, {})
+user = User(False, "", 2)
 
 
 @app.route('/')
-@app.route('/home')
+@app.route('/home', methods=['GET', 'POST'])
 def home():
+    if(request.method == 'POST'):
+        username = request.form.get('username')
+        if(username != None):
+            user.name = username
+            return render_template('restaurants.html', title='Restaurant', username=user.name)
     return render_template('home.html', title="Home Page")
 
 def refresh():
-    user = User(False, {})
+    user = User(False, "", 2)
     return home()
 
 @app.route('/thanks', methods = ['POST', 'GET'])
@@ -110,8 +174,8 @@ def thanks():
     name = request.form.get("user_name")
     return render_template('thanks.html', title="Thanks", name = name)
 
-def available_username(username):
-    cur_rows = query.select(['username'], ['persons'], f"username= '{username}'")
+def available_username(username, table = 'persons'):
+    cur_rows = query.select(['username'], [table], f"username= '{username}'")
     if(len(cur_rows)!=0):
         return False
     return True
@@ -134,25 +198,37 @@ def addUser(username, password, firstname, lastname, gender, dob, level):
     else: 
         return (-1, 'username already taken')
         
-def check_username_password(username, password):
-    cur_rows = query.select(['username'], ['persons'], f"username= '{username}' and password = '{password}'")
+def check_username_password(username, password, table = 'persons'):
+    cur_rows = query.select(['username'], [table], f"username= '{username}' and password = '{password}'")
     if(len(cur_rows)==0):
         return False
     return True
 
+def loginfrom(username, password, table = 'persons'):
+
+    if(available_username(username, table)):
+        return -1
+    elif(not check_username_password(username, password, table)):
+        return -2
+    else:
+        l = ['admin', 'managers', 'persons']
+        user.login = True
+        user.setData(username, l.index(table))
+        return 0
+
 def loginUser(username, password):
 
-    if(available_username(username)==True):
-        # return(-1, 'username does not exist')
-        return render_template('login.html', title= 'Login', error = 'username does not exist')
-    elif(check_username_password(username, password)== False):
-        return render_template('login.html', title= 'Login', error = 'username and password do not match')
-    else:
-        user.login = True
-        user.setData(username)
-        # user.set_everything(True, 2, password, username, cur_info[1])
-        return render_template('restaurants.html', title='Restaurants', name=username)
-    # return render_template('thanks.html', title='Thanks', name=username)
+    usr = loginfrom(username, password, 'persons')
+    if(usr == -1):
+        mng = loginfrom(username, password, 'managers')
+        if(mng == -1):
+            return render_template('login.html', title= 'Login', error = 'Username does not exist')
+        elif(mng == -2):
+            return render_template('login.html', title= 'Login', error = 'Incorrect password')
+    elif(usr == -2):
+        return render_template('login.html', title= 'Login', error = 'Incorrect password')
+
+    return render_template('restaurants.html', title='Restaurants', name=username, username = user.name)
 
 @app.route('/signup', methods = ['GET','POST'])
 def signup():
@@ -198,6 +274,7 @@ def login():
 
 @app.route('/restaurants', methods=['GET', 'POST'])
 def restaurants():
+    data = request.form.to_dict()
     if(request.method == 'POST'):
         distMin = request.form.get('distMin')
         # if(distMin==""):
@@ -347,13 +424,11 @@ def restaurants():
 
         cols = [i.split('.')[-1] for i in columns.split(", ")]
         
-        data = request.form.to_dict()
-        return render_template('restaurants.html', title="Filter", rows=ans, cols = cols, **data)
+        return render_template('restaurants.html', title="Filter", rows=ans, cols = cols,  username = user.name, **data)
 
         # print(distMin, resID, num, order, val, city_check, province_check)
 
-
-    return render_template('restaurants.html', title="Filter", data= {})
+    return render_template('restaurants.html', title="Filter", data= {},  username = user.name)
 
 @app.route('/update', methods=['GET', 'POST'])
 def update():
@@ -367,13 +442,22 @@ def update():
                 flash('Error updating')
         pages = ['update_admin.html','update_manager.html','update_user.html']
         return render_template(pages[user.level()], title="Update", data = user.getdata())
-    else:return refresh()
+    else:
+        flash('You are not logged in')
+        return refresh()
+
+def getdict(header, values):
+    d = {}
+    for i in range(len(header)):
+        d[header[i]] = values[i]
+    return d
 
 def changeRest(site, title, data):
 
-    if(data.get('restSelected') != None):
+    if(data.get('restSelected') != None and data.get('restSelected') != ""):
         rest_id = data.get('restSelected')
-        return render_template(site, title=title, rest_id = rest_id)   
+        rest = query.select(['*'], ['restaurants'], f"restId={rest_id}")[0]
+        return render_template(site, title=title, rest_id = rest_id, rest = getdict(query.cols,rest))   
 
     elif(data.get('mode') != None):
         mode = data.get('mode')
@@ -397,56 +481,132 @@ def changeRest(site, title, data):
         if(error != ""):
             return render_template(site, title=title, error = error, **data)
 
-        return render_template(site, title=title, rest_id = rest_id, **data)
+        rest = query.select(['*'], ['restaurants'], f"restId={rest_id}")[0]
+        return render_template(site, title=title, rest_id = rest_id, rest = getdict(query.cols,rest), **data)
     
 
 @app.route('/review', methods=['GET', 'POST'])
 def review():
-    if(request.method == 'POST'):
-        data = request.form.to_dict()
-        if(data.get('restS') != None):
-            rest_id = data.get('restS')
-            stars = data.get('stars')
-            try:
-                query.insert('reviews',[f'{user.data["id"]}',f'{rest_id}',f'{stars}'])
-                flash("Review added")
-            except:
-                flash("There was an error while adding review")
-            return render_template('review.html', title="Review", **data) 
+    if(user.login):
+        if(request.method == 'POST'):
+            data = request.form.to_dict()
+            if(data.get('restS') != None and data.get('restS') != ''):
+                rest_id = data.get('restS')
+                stars = data.get('stars')
+                try:
+                    query.insert('reviews',[f'{user.data["id"]}',f'{rest_id}',f'{stars}'])
+                    flash("Review added")
+                except:
+                    flash("There was an error while adding review")
+                    
+                return render_template('review.html', title="Review", **data) 
 
-        else: return changeRest('review.html', 'Review', data)
-    return render_template('review.html', title="Review")
+            else: 
+                changed = changeRest('review.html', 'Review', data)
+                if(changed != None):return changed
+                else: return render_template('review.html', title="Review", **data)
+        return render_template('review.html', title="Review")
+    else:
+        flash('You are not logged in')
+        return refresh()
 
 @app.route('/locate', methods=['GET', 'POST'])
 def locate():
+    if(user.login):
+        if(request.method == 'POST'):
+            data = request.form.to_dict()
+            changed = changeRest('locate.html', 'Locate', data)
+            if(changed == None):
+                
+                if(data.get('restS') != None and data.get('restS') != ''):
+                    try:
+                        rest_id = data.get('restS')
+                        ans = query.select(['latitude','longitude','name'], ['restaurants'],f'restId = {rest_id}')[0]
+                        coord = list(map(float,ans[:-1]))
+                        onmap = folium.Map(
+                            location=coord,
+                            titles='Restaurant Plotted',
+                            zoom_start=12
+                        )
+
+                        folium.Marker(
+                            location=coord,
+                            popup=ans[-1]
+                        ).add_to(onmap)
+
+                        return onmap._repr_html_()
+                    
+                    except:
+                        flash("There was an error while locating restaurant")
+                        return render_template('locate.html', title="Locate", **data)
+
+            else: return changed 
+        return render_template('locate.html', title="Locate")
+    else:
+        flash('You are not logged in')
+        return refresh()
+        
+
+def updatePass(data):
+    if(data.get('oldpass') != None):
+        if(data.get('oldpass') == user.data['password']):
+            if(data.get('newpass') == data.get('confirmpass')):
+                try:
+                    tables = ['admin', 'managers', 'persons']
+                    query.update(tables[user.level()],{'password':data.get('newpass')},f'id = {user.data["id"]}')
+                    flash("Password changed")
+                    return ""
+                except:
+                    return "There was an error while changing password"
+            else:
+                return "New passwords do not match"
+        else:
+            return "Old password is incorrect"
+
+
+def checkPass(data):
+    if(data.get('firstname') != None):
+        firstame = data.get('firstname')
+        lastname = data.get('lastname')
+        dob = data.get('dob')
+        ans = query.select(['id'], ['persons'], f"firstname = '{firstame}' and lastname = '{lastname}' and dob = '{dob}'")
+        if(len(ans) > 0 and len(ans[0]) > 0):
+            user.setDataByID(ans[0][0])
+            user.login = True
+            return ans[0][0]
+    return -1
+
+
+@app.route('/changepass', methods=['GET', 'POST'])
+def changepass():   
+
     if(request.method == 'POST'):
         data = request.form.to_dict()
-        changed = changeRest('locate.html', 'Locate', data)
-        if(changed == None):
 
-            try:
-                rest_id = data.get('restS')
-                ans = query.select(['latitude','longitude','name'], ['restaurants'],f'restId = {rest_id}')[0]
-                coord = list(map(float,ans[:-1]))
-                onmap = folium.Map(
-                    location=coord,
-                    titles='Restaurant Plotted',
-                    zoom_start=12
-                )
-
-                folium.Marker(
-                    location=coord,
-                    popup=ans[-1],
-                    tooltip='Click Here'
-                ).add_to(onmap)
-
-                return onmap._repr_html_()
+        if(user.login):
+            error = updatePass(data)
+            if(error != ""):
+                return render_template('change_password.html', title="Change Password",canchange = True, forgot=False , error = error, **data)
+            else:
+                return login()
             
-            except:
-                flash("There was an error while locating restaurant")
-
-        else: return changed 
-    return render_template('locate.html', title="Locate")
+        else:
+            idd = checkPass(data)
+            canchange = False
+            if(idd == -1):
+                error = "No user found with this details"
+                return render_template('change_password.html', title="Change Password",canchange = False, forgot=True , error = error, **data)
+            else:
+                canchange = True
+            return render_template('change_password.html', title="Change Password",canchange = canchange,forgot=True , **data)
+            
+    else:
+        canchange = False
+        forgot = True
+        if(user.login):
+            canchange = True
+            forgot = False
+    return render_template('change_password.html', title="Change Password", canchange = canchange, forgot = forgot)
 
 @app.route('/logout', methods=['GET', 'POST'])
 def logout():

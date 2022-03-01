@@ -3,16 +3,6 @@
 {% block content %}
 
 
-<!-- {%block user%}
-    {% if level == 2 %}
-    USER
-    {% elif level == 1 %}
-    MANAGER
-    {% else %}
-    ADMIN
-    {%endif%}
-{%endblock%} -->
-
         <form id = "updatemanager" class = "locaterest" method = "POST" action = "{{ url_for('update') }}">
             <h1>Update your Restaurant</h1>
             <h3>Your Restaurant id is : {{ data['restid'] }} </h3>
@@ -72,17 +62,12 @@
                 
                 <tr>
                     <td>Province : </td>
-                    <td><input type = "text" name = "province" id = "province" value = "{{ data['province'] }}"></td>
+                    <td><input type = "text" name = "pname" id = "province" value = "{{ data['pname'] }}"></td>
                 </tr>
 
 
             </table>
             <input class = "submit" type = "submit" value = "Update" id = "submit">
-
-            <br>
-            <br>
-            <input class = "submit" type = "submit" value = "Delete my Restraunt" id = "delete">
-
         </form>
 
         {% endblock %}

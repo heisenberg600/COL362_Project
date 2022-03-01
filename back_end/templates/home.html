@@ -2,10 +2,10 @@
 {%block title%} {{title}} {%endblock%}
 {% block content %}
 
-    <form id = "homebox" class = "loginbox" method = "POST" action = "{{ url_for('restaurants') }}">
+    <form id = "homebox" class = "loginbox" method = "POST" action = "{{ url_for('home') }}">
         <h1>NAME OF THE APP!</h1>
         <h2>Discover restraunts near me</h2>
-        <input type="text" name = "user_name" placeholder="Enter your Name" required>
+        <input type="text" name = "username" placeholder="Enter your Name" required>
         <input class = "submit" type = "submit" value = "Search">
     </form>
 

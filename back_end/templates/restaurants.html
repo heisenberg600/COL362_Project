@@ -3,6 +3,12 @@
 {% block content %}
 
         <form id = "filterrest" class = "locaterest" method = "POST" action = "{{ url_for('restaurants') }}">
+
+            {% if username %}
+            <h3> Hi {{ username }}</h3>
+            {%endif%}
+
+
             <h1>Filter your dream Restaurant</h1>
             <h6>(fill only required entries)</h6>
             <input class = "submit" type = "submit" value = "Refresh">
