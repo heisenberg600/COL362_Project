@@ -20,7 +20,7 @@
                     <li><a href="{{ url_for('update') }}">UPDATE</a></li>
 
                     <li>{%block user%} {%endblock%}</li>
-                    <li><a href="{{ url_for('home') }}">LOGOUT </a> </li>
+                    <li><a href="{{ url_for('logout') }}">LOGOUT </a> </li>
                     
                 </ul>
             </nav>
@@ -31,6 +31,13 @@
         {% endblock %}
 
         <script src = "{{ url_for('static', filename = 'js/locate.js') }}"></script>
+
+        {% for msg in get_flashed_messages() %}
+        <div class = "flash-message">
+            <script>alert("{{msg}}")</script>
+        </div>
+        {% endfor %}
+
         
     </body>
 </html>

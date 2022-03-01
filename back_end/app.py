@@ -360,7 +360,11 @@ def update():
     if(user.login):
         if(request.method == 'POST'):
             data = request.form.to_dict()
-            user.update(data)
+            try :
+                user.update(data)
+                flash('Updated successfully')
+            except:
+                flash('Error updating')
         pages = ['update_admin.html','update_manager.html','update_user.html']
         return render_template(pages[user.level()], title="Update", data = user.getdata())
     else:return refresh()
@@ -403,9 +407,14 @@ def review():
         if(data.get('restS') != None):
             rest_id = data.get('restS')
             stars = data.get('stars')
-            query.insert('reviews',[f'{user.data["id"]}',f'{rest_id}',f'{stars}'])
-        else: return changeRest('review.html', 'Review', data)
+            try:
+                query.insert('reviews',[f'{user.data["id"]}',f'{rest_id}',f'{stars}'])
+                flash("Review added")
+            except:
+                flash("There was an error while adding review")
+            return render_template('review.html', title="Review", **data) 
 
+        else: return changeRest('review.html', 'Review', data)
     return render_template('review.html', title="Review")
 
 @app.route('/locate', methods=['GET', 'POST'])
@@ -414,25 +423,35 @@ def locate():
         data = request.form.to_dict()
         changed = changeRest('locate.html', 'Locate', data)
         if(changed == None):
-            rest_id = data.get('restS')
-            ans = query.select(['latitude','longitude','name'], ['restaurants'],f'restId = {rest_id}')[0]
-            coord = list(map(float,ans[:-1]))
-            onmap = folium.Map(
-                location=coord,
-                titles='Restaurant Plotted',
-                zoom_start=12
-            )
 
-            folium.Marker(
-                location=coord,
-                popup=ans[-1],
-                tooltip='Click Here'
-            ).add_to(onmap)
+            try:
+                rest_id = data.get('restS')
+                ans = query.select(['latitude','longitude','name'], ['restaurants'],f'restId = {rest_id}')[0]
+                coord = list(map(float,ans[:-1]))
+                onmap = folium.Map(
+                    location=coord,
+                    titles='Restaurant Plotted',
+                    zoom_start=12
+                )
 
-            return onmap._repr_html_()
+                folium.Marker(
+                    location=coord,
+                    popup=ans[-1],
+                    tooltip='Click Here'
+                ).add_to(onmap)
+
+                return onmap._repr_html_()
+            
+            except:
+                flash("There was an error while locating restaurant")
 
         else: return changed 
     return render_template('locate.html', title="Locate")
+
+@app.route('/logout', methods=['GET', 'POST'])
+def logout():
+    flash("Logged out")
+    return refresh()
 
 
 # @app.route("/explore", methods=['GET', 'POST'])
