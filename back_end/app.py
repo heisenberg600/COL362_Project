@@ -247,6 +247,10 @@ def restaurants():
         province = request.form.get('province')
         if(province!=""):
             province = f"and province.name='{province}'"
+
+        restname = request.form.get('restname')
+        if(restname!=""):
+            restname = f"and restaurants.name='{restname}'"
         # country = request.form.get('country')
 
 
@@ -336,19 +340,20 @@ def restaurants():
         print(order, val)
         
             
-        cur_query = f"select {columns} from restaurants, province, cities where {ratingMin} {ratingMax} {createdMin} {createdMax} {priceMin} {priceMax} {city} {province} and restaurants.cityId=cities.cityId and cities.province = province.provinceId order by {val} {order} limit {num} "
+        cur_query = f"select {columns} from restaurants, province, cities where {ratingMin} {ratingMax} {createdMin} {createdMax} {priceMin} {restname} {priceMax} {city} {province} and restaurants.cityId=cities.cityId and cities.province = province.provinceId order by {val} {order} limit {num} "
 
         to_cursor.execute(cur_query)
         ans = to_cursor.fetchall()
 
         cols = [i.split('.')[-1] for i in columns.split(", ")]
-        print(ans)
-        return render_template('restaurants.html', title="Filter", rows=ans, cols = cols)
+        
+        data = request.form.to_dict()
+        return render_template('restaurants.html', title="Filter", rows=ans, cols = cols, **data)
 
         # print(distMin, resID, num, order, val, city_check, province_check)
 
 
-    return render_template('restaurants.html', title="Filter")
+    return render_template('restaurants.html', title="Filter", data= {})
 
 @app.route('/update', methods=['GET', 'POST'])
 def update():
@@ -386,9 +391,9 @@ def changeRest(site, title, data):
             else:
                 error = "No restaurant found with this coordinates"
         if(error != ""):
-            return render_template(site, title=title, error = error)
+            return render_template(site, title=title, error = error, **data)
 
-        return render_template(site, title=title, rest_id = rest_id)
+        return render_template(site, title=title, rest_id = rest_id, **data)
     
 
 @app.route('/review', methods=['GET', 'POST'])

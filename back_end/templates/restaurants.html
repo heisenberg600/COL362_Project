@@ -6,45 +6,50 @@
             <h1>Filter your dream Restaurant</h1>
             <h6>(fill only required entries)</h6>
             <input class = "submit" type = "submit" value = "Refresh">
-            <input class = "submit" type = "reset" value = "Reset">
+            <input class = "submit" type = "reset" value = "Reset" onclick="resetF();" />
 
             <table>
                 <tr>
                     <td>Distance (in Km): </td>
-                    <td><input type = "number" name = "distMin" step = "0.01"></td>
+                    <td><input type = "number" value = "{{ distMin}}" name = "distMin" step = "0.01"></td>
                     <td> to </td>
-                    <td><input type = "number" name = "distMax" step = "0.01"></td>
+                    <td><input type = "number" value = "{{ distMax}}" name = "distMax" step = "0.01"></td>
                 </tr>
 
                 <tr>
                     <td>Avg Rating : </td>
-                    <td><input type = "number" name = "ratingMin" step = "0.1" min = "0" max = "5" placeholder="0"> </td>
+                    <td><input type = "number" value = "{{ ratingMin}}" name = "ratingMin" step = "0.1" min = "0" max = "5" placeholder="0"> </td>
                     <td> to </td>
-                    <td><input type = "number" name = "ratingMax" step = "0.1" min = "0" max = "5" placeholder="5"></td>
+                    <td><input type = "number" value = "{{ ratingMax}}" name = "ratingMax" step = "0.1" min = "0" max = "5" placeholder="5"></td>
                 </tr>
 
                 <tr>
                     <td>Created between : </td>
-                    <td><input type = "date" name = "createdMin"></td>
+                    <td><input type = "date" value = "{{ createdMin}}" name = "createdMin"></td>
                     <td> and </td>
-                    <td><input type = "date" name = "createdMax"></td>
+                    <td><input type = "date" value = "{{ createdMax}}" name = "createdMax"></td>
                 </tr>
 
                 <tr>
                     <td>Avg Price : </td>
-                    <td><input type = "number" name = "priceMin" step = "1"></td>
+                    <td><input type = "number" value = "{{ priceMin}}" name = "priceMin" step = "1"></td>
                     <td> to </td>
-                    <td><input type = "number" name = "priceMax" step = "1"></td>
+                    <td><input type = "number" value = "{{ priceMax}}" name = "priceMax" step = "1"></td>
+                </tr>
+
+                <tr>
+                    <td>Name : </td>
+                    <td><input type = "text" value = "{{ restname }}" name = "restname"></td>
                 </tr>
 
                 <tr>
                     <td>City : </td>
-                    <td><input type = "text" name = "city"></td>
+                    <td><input type = "text" value = "{{ city}}" name = "city"></td>
                 </tr>
 
                 <tr>
                     <td>Province : </td>
-                    <td><input type = "text" name = "province"></td>
+                    <td><input type = "text" value = "{{ province}}" name = "province"></td>
                 </tr>
 
                 <!-- <tr>
@@ -170,6 +175,11 @@
             function review(){
                 document.forms['getrest'].action =  "{{ url_for('review') }}";
                 document.forms['getrest'].submit();
+            }
+
+            function resetF(){
+                document.forms['filterrest'].method = "GET";
+                document.forms['filterrest'].submit();
             }
             
             function showall(){
