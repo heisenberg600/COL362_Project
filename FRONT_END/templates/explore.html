@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <title>NAME OF THE APP</title>
+        <link rel="stylesheet" href="styles.css" />
+    </head>
+
+    <body>
+
+        
+        <header class="header">
+            <nav class = "nav">
+                <ul>
+                    <li><a href="{{url_for('home')}}">HOME</a></li>
+                    <li><a href="{{url_for('signin')}}">LOGIN</a></li>
+                    <li><a href="{{url_for('signup')}}">SIGNUP</a></li>
+                </ul>
+            </nav>
+        </header>
+            <h1>NAME OF THE APP!</h1>
+                <h2>Discover restraunts near me</h2>
+                <form method="POST" action="">
+                      <tr>
+                        {{form.hidden_tag()}}
+                        <td>
+                            <div class = "form-group">
+                          {{form.lattitude.label(class="form-control-label")}}
+                          {{form.lattitude(class="form-control form-control-lg")}}
+                        </div>
+                        </td>
+                        <td>
+                          <div class = "form-group">
+                          {{form.longitude.label(class="form-control-label")}}
+                          {{form.longitude(class="form-control form-control-lg")}}
+                        </div>
+                        </td>     
+                      </tr>
+                    </table>
+                    <br>
+                      <div class="form-group">
+                        {{form.submit(class="btn btn-outline-info")}}
+                      </div>
+                    {% with messages = get_flashed_messages() %}
+                  {% if messages %}
+                    <p> <font color="#FF0000">
+                      {% for message in messages %}
+                      {{ message }}
+                    {% endfor %}
+                    </p>    
+                  {% endif %}
+                {% endwith %}                  
+                    </form>
+    </body>
+
+</html>

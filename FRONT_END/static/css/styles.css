@@ -1,0 +1,149 @@
+
+@font-face {
+    font-family: "Booter - Zero Zero";
+    src: url("Fonts/Booter - Zero Zero.woff") format("woff"),
+         url("Fonts/Booter - Zero Zero.woff2") format("woff2");
+    font-weight: normal;
+    font-style: normal;
+}
+
+html, body {
+    margin: 0;
+    min-height: 100%;
+}
+
+body {
+    background-image: url('bg.jpg');
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.nav {
+    background-color: #7b5984;
+    margin-bottom: 50px;
+}
+
+.nav ul {
+    margin: 0;
+    padding-left: 100px;
+}
+
+.nav li {
+    display: inline;
+    padding: 2px;
+}
+
+.nav a {
+    display: inline-block;
+    padding: .5em;
+    color: #f8dbaf;
+}
+
+.nav li:hover{
+    background-color: #794d46;
+    border-radius:  2px;
+
+}
+
+.homebox {
+    text-align: center;
+    font-size: 1.1em;
+    font-weight: lighter;
+    /* border-bottom: 1px solid grey; */
+    padding-bottom: 20px;
+}
+
+.loginbox{
+    /* border: 10px solid grey; */
+    position: absolute;
+    top : 20%;
+    left: 40%;
+}
+
+.loginbox h1 {
+    /* border-bottom: 2px solid grey; */
+    margin-bottom: 30px;
+    padding : 5px;
+}
+
+.textbox{
+    /* width: 75%; */
+    padding: 5px;
+    margin-bottom: 20px;
+    /* border: 2px solid grey; */
+}
+
+#homebox {
+    text-align: center;
+}
+
+.locaterest{
+    margin: 20px;
+    font-size: 1.1em;
+    font-weight: lighter;
+    /* border-bottom: 1px solid grey; */
+    padding-bottom: 20px;
+}
+
+.user{
+    align-self: right;
+}
+
+
+.content-table {
+    border-collapse: collapse;
+    width: 80%;
+    margin: 100px;
+    /* border-color: #7b5984; */
+    /* margin: 25px 0; */
+    font-size: 0.9em;
+    min-width: 400px;
+    border-radius: 5px 5px 0 0;
+    overflow: hidden;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+  }
+  
+  .content-table thead tr {
+    background-color: #009879;
+    color: #ffffff;
+    text-align: center;
+    font-weight: bold;
+  }
+  
+.content-table th {
+    background-color: #cdb9d3; 
+  }
+  .content-table th,
+  .content-table td {
+      
+    padding: 12px 15px;
+  }
+  
+  .content-table tbody tr {
+    border-bottom: 1px solid #dddddd;
+  }
+  
+  .content-table tbody tr:nth-of-type(even) {
+    background-color: #f3f3f3;
+  }
+
+  .content-table tbody tr:nth-of-type(even) {
+    background-color: #f3f3f3;
+  }
+  
+  .content-table tbody tr:last-of-type {
+    border-bottom: 2px solid #009879;
+  }
+  
+  .content-table tbody tr.active-row {
+    font-weight: bold;
+    color: #009879;
+  }
+  
+
+.content-table tr:not(:first-child){
+    cursor: pointer;transition: all .25s ease-in-out;
+}
+.content-table tr:not(:first-child):hover{
+    background-color: rgb(216, 187, 207);
+}
