@@ -14,11 +14,11 @@ alter table province add constraint keys2 primary key(provinceId);
 alter table restaurants add constraint keys primary key(restId);
 alter table restaurants add constraint restref foreign key(cityId) references cities(cityId);
 alter table managers add constraint restrefs foreign key(restId) references restaurants(restId );
+alter table managers add constraint personrefman foreign key(id) references persons(id ) on delete cascade;
 alter table managers add constraint lastrestrefs foreign key(lastRestId) references restaurants(restId);
-alter table reviews add constraint personref foreign key(userId) references persons(id );
+alter table reviews add constraint personref foreign key(userId) references persons(id ) on delete cascade;
 alter table reviews add constraint restrefrev foreign key(restId) references restaurants(restId );
 alter table cities add constraint provref foreign key(province) references province(provinceId);
-
 
 
 

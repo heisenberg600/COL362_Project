@@ -1,0 +1,15 @@
+select * from persons where username = 'orangegoose209'   : 0.002585172653198242
+select username from persons where username= 'orangegoose209'   : 0.002780914306640625
+select username from persons where username= 'goldenbear246man'   : 0.002977132797241211
+select * from managers where username = 'goldenbear246man'   : 0.0008542537689208984
+select username from persons where username= 'tinyostrich567man'   : 0.0041866302490234375
+select username from managers where username= 'goldenbear246man'   : 0.0008075237274169922
+select username from persons where username= 'tinyostrich567'   : 0.0034127235412597656
+select username from managers where username= 'tinyostrich567man'   : 0.0008826255798339844
+select username from persons where username= 'orangegoose209' and password = 'sheba'   : 0.002744913101196289
+select * from managersView where id = '8'   : 0.004395723342895508
+select username from persons where username= 'tinyostrich567' and password = 'skirt'   : 0.0030684471130371094
+select * from persons where username = 'tinyostrich567'   : 0.002943754196166992
+select username from managers where username= 'goldenbear246man' and password = '79[t^$v8'   : 0.0010159015655517578
+select username from persons where username= 'tinyostrich567'   : 0.005977153778076172
+select username from managers where username= 'tinyostrich567'   : 0.0008864402770996094

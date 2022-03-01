@@ -169,7 +169,9 @@ def home():
     return render_template('home.html', title="Home Page")
 
 def refresh():
-    user = User(False, "", 2)
+    user.login = False
+    user.name = ""
+    user.priviledge = 2
     return home()
 
 @app.route('/thanks', methods = ['POST', 'GET'])
@@ -253,6 +255,11 @@ def signup():
 
     return render_template('signup.html', title="Signup")
 
+
+@app.route('/logout', methods=['GET', 'POST'])
+def logout():
+    flash("Logged out")
+    return refresh()
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -388,10 +395,14 @@ def restaurants():
         if(url):
             columns+= "restaurant.websites, "
             
-
-        num = request.form.get('num')
-        if(num==""):
-            num= "10"
+        showevery = request.form.get('showevery')
+        # print(showevery)
+        if(showevery=="on"):
+            num = "10000000"
+        else:
+            num = request.form.get('num')
+            if(num==""):
+                num= "10"
         order = request.form.get('order')
         if(order=="least"):
             order = "ASC"
@@ -421,7 +432,7 @@ def restaurants():
         
             
         cur_query = f"select {columns} from restaurants, province, cities where {ratingMin} {ratingMax} {createdMin} {createdMax} {priceMin} {restname} {priceMax} {city} {province} and restaurants.cityId=cities.cityId and cities.province = province.provinceId order by {val} {order} limit {num} "
-
+        print(cur_query)
         to_cursor.execute(cur_query)
         ans = to_cursor.fetchall()
 
@@ -436,18 +447,33 @@ def restaurants():
 @app.route('/update', methods=['GET', 'POST'])
 def update():
     if(user.login):
+
         if(request.method == 'POST'):
+
+            delete = request.form.get('delete')
+            if(delete!=None):
+                cur_query = f"delete from persons where persons.id= '{user.data['id']}'"
+                to_cursor.execute(cur_query)
+                if(user.data['priviledge']==1):
+                    cur_query = f"delete from managers where managers.id= '{user.data['id']}'"
+                    to_cursor.execute(cur_query)
+            
+                logout()
+                return render_template('home.html', title="Home Page")
             data = request.form.to_dict()
+
             try :
                 user.update(data)
                 flash('Updated successfully')
             except:
                 flash('Error updating')
         pages = ['update_admin.html','update_manager.html','update_user.html']
+
         return render_template(pages[user.level()], title="Update", data = user.getdata())
     else:
         flash('You are not logged in')
         return refresh()
+
 
 def getdict(header, values):
     d = {}
@@ -615,32 +641,6 @@ def changepass():
             canchange = True
             forgot = False
     return render_template('change_password.html', title="Change Password", canchange = canchange, forgot = forgot)
-
-@app.route('/logout', methods=['GET', 'POST'])
-def logout():
-    flash("Logged out")
-    query.dump()
-    return refresh()
-
-
-# @app.route("/explore", methods=['GET', 'POST'])
-# def explore():
-#     form = Finder()
-#     lattitude = form.lattitude.data
-#     longitude = form.longitude.data
-#     restaurants = []
-#     if request.method == 'POST':
-#         print(lattitude)
-#         print(longitude)
-#         if (lattitude == None or longitude == None or lattitude < -90 or longitude > 90 or longitude < -180 or longitude > 180):
-#             flash('Enter correct values')
-#         cursor = connection.cursor()
-#         query = "select * from userdetails limit 10"
-#         cursor.execute(query)
-#         restaurants = cursor.fetchall()
-#         if len(restaurants) == 0:
-#             flash('Sorry could not find any restaurants near your :(')
-#     return render_template('explore.html', title="Explore Page", form=form, restaurants=restaurants)
 
 
 
