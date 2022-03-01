@@ -47,10 +47,10 @@
                     <td><input type = "text" name = "province"></td>
                 </tr>
 
-                <tr>
+                <!-- <tr>
                     <td>Country : </td>
                     <td><input type = "text" name = "country"></td>
-                </tr>
+                </tr> -->
             </table>
         
             <h3>Columns displayed : </h3>
@@ -75,9 +75,16 @@
 
             <table>
                 <tr>
-                    <td>Show top </td>
-                    <td><input type = "number" min = "0" name = "num"> </td>
-                    <td>rows with</td>
+                    <td>Show </td>
+                    <td>
+                        <label>
+                            <input type="checkbox" onclick="showall();" ID = "all" />  All
+                        </label>
+                    </td>
+                    <td>
+                        <div id = "topp"> / top <input type = "number" min = "0" name = "num" value = "10"> </div>
+                    </td>
+                    <td>rows sorted with</td>
                     <td>
                         <select name = "order" id = "orderID">
                             <option value = "least">Least</option>
@@ -151,6 +158,7 @@
                     document.getElementById("selectedText").innerHTML = "You selected restaurant :" ;
                     document.getElementById("selectedID").innerHTML = this.cells[0].innerHTML;
                     document.getElementById("restSelected").value = this.cells[0].innerHTML;
+                    document.getElementById("topp").style.display = "none";
                 };
             }
 
@@ -163,6 +171,16 @@
                 document.forms['getrest'].action =  "{{ url_for('review') }}";
                 document.forms['getrest'].submit();
             }
-
+            
+            function showall(){
+                var show = document.getElementById("all");
+                var topp = document.getElementById("topp");
+                if(show.checked){
+                    topp.style.display = "none";
+                }
+                else{
+                    topp.style.display = "block";
+                }
+            }
      </script>
 {%endblock%}

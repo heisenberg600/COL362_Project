@@ -46,6 +46,7 @@ class Query:
         values = ', '.join(values)
         query = f'insert into {table} values({values})'
         self.execute(query)
+        print(query)
         self.s.add(query)
 
     def update(self, table, data, cond):

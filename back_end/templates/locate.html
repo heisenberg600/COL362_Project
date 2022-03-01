@@ -38,6 +38,7 @@
 
         <form id = "locaterest" class = "locaterest" method = "POST" action = "{{ url_for('locate') }}">
             <h1>Locate your Restaurant</h1>
+            <input hidden type = "text" name = "restS" value = "{{ rest_id }}">
             <input class = "submit" type = "submit" value = "Locate">
 
         </form>

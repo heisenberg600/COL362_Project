@@ -6,6 +6,7 @@ from matplotlib.pyplot import title
 import psycopg2 as psql
 from form import Finder, LoginForm, SignUpForm
 from query import Query
+import folium
 
 SECRET_KEY = 'development'
 APP_SETTINGS = "config.DevelopmentConfig"
@@ -245,7 +246,7 @@ def restaurants():
             city = f"and cities.city='{city}'"
         province = request.form.get('province')
         if(province!=""):
-            province = f"and provinces.province='{province}'"
+            province = f"and province.name='{province}'"
         # country = request.form.get('country')
 
 
@@ -394,21 +395,38 @@ def changeRest(site, title, data):
 def review():
     if(request.method == 'POST'):
         data = request.form.to_dict()
-        if(changeRest('review.html', 'Review') == None):
-            rest_id = data.get('restSelected')
+        if(data.get('restS') != None):
+            rest_id = data.get('restS')
             stars = data.get('stars')
+            query.insert('reviews',[f'{user.data["id"]}',f'{rest_id}',f'{stars}'])
+        else: return changeRest('review.html', 'Review', data)
 
-            # add star
     return render_template('review.html', title="Review")
 
 @app.route('/locate', methods=['GET', 'POST'])
 def locate():
     if(request.method == 'POST'):
         data = request.form.to_dict()
-        if(changeRest('review.html', 'Review') == None):
-            pass
-            # plot
+        changed = changeRest('locate.html', 'Locate', data)
+        if(changed == None):
+            rest_id = data.get('restS')
+            ans = query.select(['latitude','longitude','name'], ['restaurants'],f'restId = {rest_id}')[0]
+            coord = list(map(float,ans[:-1]))
+            onmap = folium.Map(
+                location=coord,
+                titles='Restaurant Plotted',
+                zoom_start=12
+            )
 
+            folium.Marker(
+                location=coord,
+                popup=ans[-1],
+                tooltip='Click Here'
+            ).add_to(onmap)
+
+            return onmap._repr_html_()
+
+        else: return changed 
     return render_template('locate.html', title="Locate")
 
 
